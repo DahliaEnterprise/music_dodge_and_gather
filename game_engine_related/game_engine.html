@@ -1,0 +1,1128 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Music dodge and gather</title>
+    <script type="text/javascript">
+      /* Venmo: Shane-Betz1990 */
+      
+			//image element download manager
+			var image_element_download_xhr_status = 0;
+			var image_element_download_xhr_request = null;
+			var image_element_download_xhr_request_status_loaded = null;
+			var image_element_download_xhr_request_reponse_data = null;
+			
+      //open gl
+      var canvas_handle = null;
+      var opengles = null;
+      
+      //shaders
+			  //solid color
+        var solid_color_vertex_shader = null;
+        var solid_color_vertex_shader_source_code = null;
+        var solid_color_fragment_shader = null;
+        var solid_color_fragment_shader_source_code = null;
+        var solid_color_shader_program = null;
+      
+				//textured
+				var texture_vertex_shader = null;
+				var texture_vertex_shader_source_code = null;
+				var texture_fragment_shader = null;
+				var texture_fragment_shader_source_code = null;
+				var texture_shader_program = null;
+      
+      //models
+			  //function definitions model assistance
+          //combine vertex with rgba color
+          var combine_vertex_and_rgba_color = null;
+				
+				  //combine vertex with texture coordinates.
+				  var combine_vertex_and_texture_coordinates = null;
+        
+				//model definitions
+          //multicolored triangle
+          var triangle_vertex = null;
+          var triangle_rgba_color = null;
+          var triangle_total_rows = null;
+          var triangle_vertex_opengles = null;
+          var triangle_metadata = { "position": { "x": 0.000000, "y": 0.000000, "z": 0.000000 },
+                                    "rotation": { "x": 0.000000, "y": 0.000000, "z": 0.000000 },
+                                    "scale": {  "x": 1.000000, "y": 1.000000, "z": 1.000000 },
+                                  };
+          //var triangle_and_rgba_color_vertex_manipulated = null;
+          var triangle_and_texturecoordinates_vertex_manipulated = null;
+        
+				  var triangle_texture_coordinates = null;
+				
+				  //square to point towards
+				  var square_vertex = null;
+				  var square_rgba_color = null;
+			  	var square_total_rows = null;
+			  	var square_vertex_opengles = null;
+			  	var square_metadata = { "position": { "x": 0.000000, "y": 0.000000, "z": 0.000000 },
+                                  "rotation": { "x": 0.000000, "y": 0.000000, "z": 0.000000 },
+                                  "scale": {  "x": 1.000000, "y": 1.000000, "z": 1.000000 },
+                                };
+				  //var square_and_rgba_color_vertex_manipulated = null;
+          var square_and_texturecoordinates_vertex_manipulated = null;
+				
+				  var square_texture_coordinates = null;
+				
+				
+		  //texture catalogue
+			var texture_catalogue = [];
+			var texture_catalogue_cloneable_entry = { "rgba_data": null, "rgba_data_downloaded": false,  "rgba_data_url": null, "dimensions": { "width": null, "height": null}, "opengles_texture_buffer": null };
+			var texture_catalogue_current_download_target = null;
+			
+      //functions (header)
+        //start main program
+        var start_render = null;
+        
+        //tick game conditions
+        var tick_game_conditions = null;
+        var tick_game_conditions_last_tick_timestamp = null;
+        
+        //render frame
+        var render_frame = null;
+        var render_frame_interval = null;
+        var render_frame_last_rendered_timestamp = null;
+        
+          //render position translation.
+          var render_frame_translate_position = null;
+      
+          //render rotation translation.
+            //x
+            var render_frame_translate_rotation_x = null;
+            //y
+            var render_frame_translate_rotation_y = null;
+            //z
+            var render_frame_translate_rotation_z = null;
+            
+            //rotation assistant.
+            var get_two_dimensional_adjacent_opposite_hypotenus = null;
+						var get_two_dimensional_angle_as_radians_y_rotation = null;
+            var get_two_dimensional_angle_as_radians_z_rotation = null;
+            var get_two_dimensional_apply_desired_rotation = null;
+           
+          //vanishing point.
+          var alter_coordinate_for_vanishing_point_compensation = null;
+         
+      //scene manager
+			var scene_prestage_scene = null;
+			var scene_major_scene = null;
+			var scene_minor_scene = null;
+			
+			  //scene major one
+				var tick_scene_major_one = null;
+				  //image elements.
+					var scene_major_one_minor_one_image_elements = [];
+					 
+        
+      //define functions.
+			image_element_download_xhr_request_status_loaded = function(event)
+			{
+				image_element_download_xhr_status = 2;
+				image_element_download_xhr_request_reponse_data = image_element_download_xhr_request.response;
+			}
+			
+      combine_vertex_and_rgba_color = function(vertex, rgba_color, total_rows)
+      {
+        let size_of_vertex_and_color_rgba = ((3+4)*total_rows);
+        let vertex_and_color_rgba = new Float32Array(size_of_vertex_and_color_rgba);
+        
+        let vertex_index = 0;
+        let rgba_color_index = 0;
+        let vertex_and_color_rgba_index = 0;
+        let row = 0
+        while(row < total_rows)
+        {
+          vertex_and_color_rgba[vertex_and_color_rgba_index] = vertex[vertex_index];
+          vertex_and_color_rgba[vertex_and_color_rgba_index+1] = vertex[vertex_index+1];
+          vertex_and_color_rgba[vertex_and_color_rgba_index+2] = vertex[vertex_index+2];
+          
+          vertex_and_color_rgba[vertex_and_color_rgba_index+3] = rgba_color[rgba_color_index];
+          vertex_and_color_rgba[vertex_and_color_rgba_index+4] = rgba_color[rgba_color_index+1];
+          vertex_and_color_rgba[vertex_and_color_rgba_index+5] = rgba_color[rgba_color_index+2];
+          vertex_and_color_rgba[vertex_and_color_rgba_index+6] = rgba_color[rgba_color_index+3];
+          
+          vertex_and_color_rgba_index = vertex_and_color_rgba_index + 7;
+          vertex_index = vertex_index + 3;
+          rgba_color_index = rgba_color_index + 4;
+          row = row + 1;
+        }
+        
+        return vertex_and_color_rgba;
+      }
+      
+			
+			combine_vertex_and_texture_coordinates = function(vertex, texture_coordinates, total_rows)
+      {
+        let size_of_vertex_and_texture_coordinates = ((3+2)*total_rows);
+        let vertex_and_texture_coordinate = new Float32Array(size_of_vertex_and_texture_coordinates);
+        
+        let vertex_index = 0;
+        let texture_coordinate_index = 0;
+        let vertex_and_texture_coordinate_index = 0;
+        let row = 0
+        while(row < total_rows)
+        {
+          vertex_and_texture_coordinate[vertex_and_texture_coordinate_index] = vertex[vertex_index];
+          vertex_and_texture_coordinate[vertex_and_texture_coordinate_index+1] = vertex[vertex_index+1];
+          vertex_and_texture_coordinate[vertex_and_texture_coordinate_index+2] = vertex[vertex_index+2];
+          
+          vertex_and_texture_coordinate[vertex_and_texture_coordinate_index+3] = texture_coordinates[texture_coordinate_index];
+          vertex_and_texture_coordinate[vertex_and_texture_coordinate_index+4] = texture_coordinates[texture_coordinate_index+1];
+          
+          vertex_and_texture_coordinate_index = vertex_and_texture_coordinate_index + 5;
+          vertex_index = vertex_index + 3;
+          texture_coordinate_index = texture_coordinate_index + 2;
+          row = row + 1;
+        }
+        
+        return vertex_and_texture_coordinate;
+      }
+			
+			
+      start_render = function()
+      {
+				
+        //open gl
+        canvas_handle = document.getElementById("canvas_for_opengles");
+        
+        opengles = canvas_handle.getContext("webgl2", {
+                                                        "antialias": true,
+                                                        "depth": true
+                                                      });
+        opengles.viewportWidth = canvas_handle.width;
+        opengles.viewportHeight = canvas_handle.height;
+        
+        //antialias
+        opengles.enable(opengles.SAMPLE_COVERAGE);
+        opengles.sampleCoverage(1.0, false);
+        
+        //depth (test)
+        opengles.enable(opengles.DEPTH_TEST);
+        opengles.depthFunc(opengles.LESS);
+        
+        //enable, and set cull face; dont rely on default setting
+        opengles.disable(opengles.CULL_FACE);
+        //opengles.cullFace(opengles.BACK);
+        
+        //compile and thus have anticipated shaders ready.
+        solid_color_vertex_shader = opengles.createShader(opengles.VERTEX_SHADER);
+        solid_color_vertex_shader_source_code = "";
+        solid_color_vertex_shader_source_code = solid_color_vertex_shader_source_code + "attribute vec4 position_of_vertex_to_colorize; \n";
+        solid_color_vertex_shader_source_code = solid_color_vertex_shader_source_code + "attribute vec4 color_of_vertex_to_colorize; \n";
+        solid_color_vertex_shader_source_code = solid_color_vertex_shader_source_code + "varying vec4 varying_color_of_vertex_to_colorize; \n";
+        solid_color_vertex_shader_source_code = solid_color_vertex_shader_source_code + "void main() { \n";
+        solid_color_vertex_shader_source_code = solid_color_vertex_shader_source_code + "  //colorize position.  \n";
+        solid_color_vertex_shader_source_code = solid_color_vertex_shader_source_code + "  gl_Position = position_of_vertex_to_colorize; \n";
+        solid_color_vertex_shader_source_code = solid_color_vertex_shader_source_code + "  varying_color_of_vertex_to_colorize = color_of_vertex_to_colorize;  \n";
+        solid_color_vertex_shader_source_code = solid_color_vertex_shader_source_code + "} \n";
+                  
+        opengles.shaderSource(solid_color_vertex_shader , solid_color_vertex_shader_source_code);
+              
+        opengles.compileShader(solid_color_vertex_shader);
+              
+        solid_color_fragment_shader = opengles.createShader(opengles.FRAGMENT_SHADER);
+        solid_color_fragment_shader_source_code = "";
+        solid_color_fragment_shader_source_code = solid_color_fragment_shader_source_code + "precision mediump float;  \n";
+        solid_color_fragment_shader_source_code = solid_color_fragment_shader_source_code + "varying vec4 varying_color_of_vertex_to_colorize; \n";
+        solid_color_fragment_shader_source_code = solid_color_fragment_shader_source_code + "void main() { \n";
+        solid_color_fragment_shader_source_code = solid_color_fragment_shader_source_code + "  //Define filter \n";
+        solid_color_fragment_shader_source_code = solid_color_fragment_shader_source_code + "  gl_FragColor = varying_color_of_vertex_to_colorize; \n";
+        solid_color_fragment_shader_source_code = solid_color_fragment_shader_source_code + "} \n";
+                
+        opengles.shaderSource(solid_color_fragment_shader, solid_color_fragment_shader_source_code);
+                
+        opengles.compileShader(solid_color_fragment_shader);
+                
+        solid_color_shader_program = opengles.createProgram();
+        opengles.attachShader(solid_color_shader_program, solid_color_vertex_shader);
+        opengles.attachShader(solid_color_shader_program, solid_color_fragment_shader);
+        opengles.linkProgram(solid_color_shader_program);
+      
+        if(!opengles.getProgramParameter(solid_color_shader_program, opengles.LINK_STATUS))
+        {
+          alert("shader link process failed.");
+        }
+				
+				//compile textire shader
+				texture_vertex_shader = opengles.createShader(opengles.VERTEX_SHADER);
+				texture_vertex_shader_source_code = "";
+				texture_vertex_shader_source_code = texture_vertex_shader_source_code + "attribute vec4 a_Position; \n";
+        texture_vertex_shader_source_code = texture_vertex_shader_source_code + "attribute vec2 a_TexCoord; \n";
+        texture_vertex_shader_source_code = texture_vertex_shader_source_code + "varying highp vec2 v_TexCoord; \n";
+        texture_vertex_shader_source_code = texture_vertex_shader_source_code + "void main(void) { \n";
+        texture_vertex_shader_source_code = texture_vertex_shader_source_code+ "  gl_Position = a_Position; \n"; 
+        texture_vertex_shader_source_code = texture_vertex_shader_source_code + "  v_TexCoord = a_TexCoord; \n"; 
+        texture_vertex_shader_source_code = texture_vertex_shader_source_code + "} \n";
+						
+				texture_fragment_shader = opengles.createShader(opengles.FRAGMENT_SHADER);
+				texture_fragment_shader_source_code = "";
+				texture_fragment_shader_source_code = texture_fragment_shader_source_code + "varying highp vec2 v_TexCoord; \n";
+				texture_fragment_shader_source_code = texture_fragment_shader_source_code + "uniform sampler2D u_Sampler; \n";
+				texture_fragment_shader_source_code = texture_fragment_shader_source_code + "void main(void){ \n";
+				texture_fragment_shader_source_code = texture_fragment_shader_source_code + "  gl_FragColor = texture2D(u_Sampler, v_TexCoord); \n";
+				texture_fragment_shader_source_code = texture_fragment_shader_source_code +  "} \n";
+				
+				opengles.shaderSource(texture_vertex_shader, texture_vertex_shader_source_code);
+				opengles.compileShader(texture_vertex_shader);
+						
+				opengles.shaderSource(texture_fragment_shader, texture_fragment_shader_source_code);
+        opengles.compileShader(texture_fragment_shader);
+						
+				texture_shader_program = opengles.createProgram();
+        opengles.attachShader(texture_shader_program, texture_vertex_shader);
+				opengles.attachShader(texture_shader_program, texture_fragment_shader);
+        opengles.linkProgram(texture_shader_program);
+        if(!opengles.getProgramParameter(texture_shader_program, opengles.LINK_STATUS))
+        {
+          alert("shader link failed");
+         }
+				
+       //define triangle vertex.
+       triangle_vertex = new Float32Array([ /*
+                                              1.0, -0.1, -0.5,
+                                              0.000001, -0.1, -0.5,
+                                              0.5, -0.2, -0.000001*/
+                                              
+                                     0.01, 0.01, 00, 
+                                    //bottom left
+                                    -0.20, -0.20, 0.20,
+                                    //bottom right
+                                    0.20, -0.20, 0.20, 
+                                  
+                                  /* second triangle right side facing camera */
+                                    //top
+                                    0.01, 0.01, 0.0,
+                                    //bottom left
+                                    0.20, -0.20, 0.20, 
+                                    //bottom right
+                                    0.20, -0.20, -0.2, 
+                                  
+                                  /* third triangle left side facing camera */
+                                    //top 
+                                    0.01, 0.01, 0.0, 
+                                    //bottom left
+                                    -0.20, -0.20, -0.2, 
+                                    //bottom right
+                                    -0.20, -0.20, 0.2, 
+                                  
+                                  /* fourth triangle back side facing camera */
+                                    //top
+                                    0.01, 0.01, 0.0, 
+                                    //bottom right
+                                    0.20, -0.20, -0.2, 
+                                    //bottom left
+                                    -0.20, -0.20, -0.2, 
+                                
+                                             ]);
+                                             
+                                             
+       /*triangle_rgba_color = new Float32Array([
+                                                  1.0, 0.0, 0.0, 1.0,
+                                                  1.0, 1.0, 0.0, 1.0,
+                                                  1.0, 0.0, 1.0, 1.0,
+                                                  
+                                                  1.0, 0.0, 0.0, 1.0,
+                                                  0.8, 1.0, 0.0, 1.0,
+                                                  0.3, 0.0, 1.0, 1.0,
+                                                  
+                                                  1.0, 0.0, 0.0, 1.0,
+                                                  0.5, 1.0, 0.0, 1.0,
+                                                  0.7, 0.0, 1.0, 1.0,
+                                                  
+                                                  1.0, 0.0, 0.0, 1.0,
+                                                  0.3, 1.0, 0.0, 1.0,
+                                                  0.8, 0.0, 1.0, 1.0
+                                                  
+                                                  
+                                                  
+                                                ]);      */
+																							
+			 	//texture coordinates stay the same(more often then not), so keep them on tje graphics chip.
+				triangle_texture_coordinates = [
+									                       0.0,  0.0,
+                                         1.0,  0.0,
+                                         1.0,  1.0,
+																										
+																		   	0.0,  0.0,
+                                                    1.0,  0.0,
+                                                    1.0,  1.0,
+																										
+																										0.0,  0.0,
+                                                    1.0,  0.0,
+                                                    1.0,  1.0,
+																										
+																										0.0,  0.0,
+                                                    1.0,  0.0,
+                                                    1.0,  1.0
+																										];
+																								
+       triangle_total_rows = 12;
+       
+			 
+         
+       //define square, proverbial ground vertex
+			 square_vertex = new Float32Array([
+			                                    1.0, 1.0, 0.5,
+																					-1.0, 1.0, 0.5,
+																					-1.0, -1.0, 0.0,
+																					
+																					1.0, 1.0, 0.5,
+																					-1.0, -1.0, 0.0,
+																					1.0, -1.0, 0.0
+			                                  ]);
+																				
+			 square_texture_coordinates = new Float32Array([
+			                                                  1.0, 1.0,
+																												0.0, 1.0,
+																												0.0, 0.0,
+																												
+																												1.0, 1.0,
+																												0.0, 0.0,
+																												1.0, 0.0
+			                                               ]);
+													
+			 square_total_rows = 6;		
+																										 
+			 //set scene parameters to initial/zero
+			 scene_prestage_scene = 1;
+			 scene_major_scene = 1;
+			 scene_minor_scene = 1;
+			
+       
+    
+       //render frame loop
+       render_frame_interval = (1000 / 30); //target frame per second, 1000 milliseconds divided by target frame rate;
+       let syncronized_timestamp = Date.now();
+       render_frame_last_rendered_timestamp = syncronized_timestamp;
+       tick_game_conditions_last_tick_timestamp = syncronized_timestamp;
+       tick_game_conditions();
+      }
+			
+			
+      tick_game_conditions = function()
+      {
+        let timepassed_since_last_game_tick = Date.now() - tick_game_conditions_last_tick_timestamp;
+        if(timepassed_since_last_game_tick >= 1)
+        { 
+					if(scene_major_scene == 1)
+					{
+						tick_scene_major_one(timepassed_since_last_game_tick);
+					}
+					
+					
+          //update tick_game_conditions_last_tick_timestamp
+          tick_game_conditions_last_tick_timestamp = Date.now();
+        
+        }
+        
+			
+        //flag frame to render(function will decide if its time for sure).
+        render_frame();
+        
+      
+        //continue loop.
+        setTimeout(tick_game_conditions, 1);
+      }
+      
+      let   u_Sampler;
+      render_frame = function()
+      {
+        
+        //determine when to begin render next frame.
+        let current_timestamp_millisecond_format = Date.now();
+        let time_passed_since_last_render = current_timestamp_millisecond_format - render_frame_last_rendered_timestamp;
+        
+        if(time_passed_since_last_render >= render_frame_interval)
+        {
+         //Clear the viewport(screen) before drawing a new frame. (you will always do it this way, the only rare times you will add on to an already drawn frame is maybe an Operating System window(or UI) that goes on top of everything else and usually only when there is no alpha or moving objects).
+         opengles.clearColor(0.0, 0.0, 0.0, 1.0);
+         opengles.viewport(0, 0, opengles.viewportWidth, opengles.viewportHeight);
+         opengles.clear(opengles.COLOR_BUFFER_BIT);
+        
+         //draw multi colored triangle
+         let triangle_vertex_manipulated = new Float32Array(triangle_vertex);
+         
+         triangle_vertex_manipulated =  render_frame_translate_rotation_z(triangle_vertex_manipulated, triangle_total_rows, triangle_metadata.rotation.z);
+         triangle_vertex_manipulated =  render_frame_translate_rotation_y(triangle_vertex_manipulated, triangle_total_rows, triangle_metadata.rotation.y);
+         
+         triangle_vertex_manipulated =  render_frame_translate_rotation_x(triangle_vertex_manipulated, triangle_total_rows, triangle_metadata.rotation.x);
+        
+         triangle_vertex_manipulated = render_frame_translate_position(triangle_vertex_manipulated, triangle_total_rows, triangle_metadata.position.x, triangle_metadata.position.y, triangle_metadata.position.z);
+      
+				
+				 
+         //perspective
+         triangle_vertex_manipulated = alter_coordinate_for_vanishing_point_compensation(triangle_vertex_manipulated, triangle_total_rows);
+      
+       
+         //triangle_and_rgba_color_vertex_manipulated = combine_vertex_and_rgba_color(triangle_vertex_manipulated, triangle_rgba_color, triangle_total_rows);
+        
+		   	 triangle_and_texturecoordinates_vertex_manipulated	= combine_vertex_and_texture_coordinates(triangle_vertex_manipulated, triangle_texture_coordinates, triangle_total_rows);
+				 
+				 
+				 
+				 
+         triangle_vertex_opengles = opengles.createBuffer();
+         opengles.bindBuffer(opengles.ARRAY_BUFFER, triangle_vertex_opengles);
+         opengles.bufferData(opengles.ARRAY_BUFFER, triangle_and_texturecoordinates_vertex_manipulated, opengles.STATIC_DRAW);
+             
+				 
+				 let float_size = triangle_and_texturecoordinates_vertex_manipulated.BYTES_PER_ELEMENT;
+					 
+				 let attribute_position_coordinates = opengles.getAttribLocation(texture_shader_program, "a_Position");
+            opengles.vertexAttribPointer(attribute_position_coordinates, 3, opengles.FLOAT, false, (float_size * 5), 0);
+            opengles.enableVertexAttribArray(attribute_position_coordinates);
+        
+        
+         let attribute_texture_coordinates = opengles.getAttribLocation(texture_shader_program, 'a_TexCoord');
+            opengles.vertexAttribPointer(attribute_texture_coordinates , 2, opengles.FLOAT, false, (float_size * 5), (float_size * 3));
+            opengles.enableVertexAttribArray(attribute_texture_coordinates);
+            
+						
+						
+				opengles.pixelStorei(opengles.UNPACK_FLIP_Y_WEBGL, 1);
+             
+             
+			  //alert the gpu where to open and ready for unloading of texture data to gpu memory.
+        opengles.activeTexture(opengles.TEXTURE0);
+             
+        opengles.bindTexture(opengles.TEXTURE_2D, texture_catalogue["yellow_to_pink_gradient"].opengles_texture_buffer);
+						 
+			  u_Sampler = opengles.getUniformLocation(texture_shader_program, 'u_Sampler');
+             //flag which sampler to use with uniform.
+             opengles.uniform1i(u_Sampler, 0);
+             
+             opengles.texParameteri(opengles.TEXTURE_2D, opengles.TEXTURE_MIN_FILTER, opengles.LINEAR);
+              
+             //upload image data from motherboard ram to gpu ram through cpu instructions.
+            // opengles.texImage2D(opengles.TEXTURE_2D, 0, opengles.RGBA, opengles.RGBA, opengles.UNSIGNED_BYTE, image_data);
+          opengles.texImage2D(opengles.TEXTURE_2D, 0, opengles.RGBA, texture_catalogue["yellow_to_pink_gradient"].dimensions.width, texture_catalogue["yellow_to_pink_gradient"].dimensions.height, 0, opengles.RGBA, opengles.UNSIGNED_BYTE, texture_catalogue["yellow_to_pink_gradient"].rgba_data);
+					
+             
+             //tell gpu what vertex to draw now that the texture to draw with it has been activated.
+             opengles.useProgram(texture_shader_program);
+             opengles.drawArrays(opengles.TRIANGLES, 0, triangle_total_rows);
+				
+				 //draw ground
+				 let square_vertex_manipulated = new Float32Array(square_vertex);
+         
+         square_vertex_manipulated =  render_frame_translate_rotation_z(square_vertex_manipulated, square_total_rows, square_metadata.rotation.z);
+         square_vertex_manipulated =  render_frame_translate_rotation_y(square_vertex_manipulated, square_total_rows, square_metadata.rotation.y);
+         
+         square_vertex_manipulated =  render_frame_translate_rotation_x(square_vertex_manipulated, square_total_rows, square_metadata.rotation.x);
+        
+         
+         //perspective
+         square_vertex_manipulated = alter_coordinate_for_vanishing_point_compensation(square_vertex_manipulated, square_total_rows);
+      
+       
+         //triangle_and_rgba_color_vertex_manipulated = combine_vertex_and_rgba_color(triangle_vertex_manipulated, triangle_rgba_color, triangle_total_rows);
+        
+		   	 square_and_texturecoordinates_vertex_manipulated	= combine_vertex_and_texture_coordinates(square_vertex_manipulated, square_texture_coordinates, square_total_rows);
+				 
+				 
+				 
+				 
+         square_vertex_opengles = opengles.createBuffer();
+         opengles.bindBuffer(opengles.ARRAY_BUFFER, square_vertex_opengles);
+         opengles.bufferData(opengles.ARRAY_BUFFER, square_and_texturecoordinates_vertex_manipulated, opengles.STATIC_DRAW);
+             
+				 
+				 float_size = square_and_texturecoordinates_vertex_manipulated.BYTES_PER_ELEMENT;
+					 
+				  attribute_position_coordinates = opengles.getAttribLocation(texture_shader_program, "a_Position");
+            opengles.vertexAttribPointer(attribute_position_coordinates, 3, opengles.FLOAT, false, (float_size * 5), 0);
+            opengles.enableVertexAttribArray(attribute_position_coordinates);
+        
+        
+         attribute_texture_coordinates = opengles.getAttribLocation(texture_shader_program, 'a_TexCoord');
+            opengles.vertexAttribPointer(attribute_texture_coordinates , 2, opengles.FLOAT, false, (float_size * 5), (float_size * 3));
+            opengles.enableVertexAttribArray(attribute_texture_coordinates);
+            
+						
+						
+				opengles.pixelStorei(opengles.UNPACK_FLIP_Y_WEBGL, 1);
+             
+             
+			  //alert the gpu where to open and ready for unloading of texture data to gpu memory.
+        opengles.activeTexture(opengles.TEXTURE0);
+             
+        opengles.bindTexture(opengles.TEXTURE_2D, texture_catalogue["yellow_smile_face"].opengles_texture_buffer);
+						 
+			  u_Sampler = opengles.getUniformLocation(texture_shader_program, 'u_Sampler');
+             //flag which sampler to use with uniform.
+             opengles.uniform1i(u_Sampler, 0);
+             
+             opengles.texParameteri(opengles.TEXTURE_2D, opengles.TEXTURE_MIN_FILTER, opengles.LINEAR);
+              
+             //upload image data from motherboard ram to gpu ram through cpu instructions.
+            // opengles.texImage2D(opengles.TEXTURE_2D, 0, opengles.RGBA, opengles.RGBA, opengles.UNSIGNED_BYTE, image_data);
+          opengles.texImage2D(opengles.TEXTURE_2D, 0, opengles.RGBA, texture_catalogue["yellow_smile_face"].dimensions.width, texture_catalogue["yellow_smile_face"].dimensions.height, 0, opengles.RGBA, opengles.UNSIGNED_BYTE, texture_catalogue["yellow_smile_face"].rgba_data);
+					
+					//tell gpu what vertex to draw now that the texture to draw with it has been activated.
+             opengles.useProgram(texture_shader_program);
+             opengles.drawArrays(opengles.TRIANGLES, 0, square_total_rows);
+						 
+				
+         //cleanup
+         opengles.deleteBuffer(triangle_vertex_opengles);
+         triangle_vertex_opengles = null;
+				 opengles.deleteBuffer(square_vertex_opengles);
+				 square_vertex_opengles = null;
+        
+      
+         render_frame_last_rendered_timestamp = Date.now();
+        
+        }
+      }
+      
+      //translate position.
+      render_frame_translate_position = function(vertex_to_translate_position_thereof, total_rows_within_vertex, offset_x, offset_y, offset_z)
+      {
+        let manipulated_vertex = new Float32Array(vertex_to_translate_position_thereof);
+        
+        let manipulated_vertex_index = 0;
+        let row_index = 0;
+        while(row_index < total_rows_within_vertex)
+        {
+          manipulated_vertex[manipulated_vertex_index] = manipulated_vertex[manipulated_vertex_index]+offset_x;
+          manipulated_vertex[manipulated_vertex_index+1] = manipulated_vertex[manipulated_vertex_index+1]+offset_y;
+          manipulated_vertex[manipulated_vertex_index+2] = manipulated_vertex[manipulated_vertex_index+2]+offset_z;
+          
+          //next row.
+          manipulated_vertex_index = manipulated_vertex_index + 3;
+          row_index = row_index + 1;
+        }
+        
+        //output
+        return manipulated_vertex;
+      }
+      
+      //translate rotation x
+      render_frame_translate_rotation_x = function(vertex_to_translate_rotation_thereof, total_rows_within_vertex, offset_x_rotation)
+      {
+        let output = new Float32Array(vertex_to_translate_rotation_thereof);
+        
+        //only support top right starting position(this is closest to the "camera" and to the right).
+        
+        let vertex_index = 0;
+        let row = 0;
+        while(row < total_rows_within_vertex)
+        {
+          //point two x and y.
+          let point_two_z = output[vertex_index+2];
+          let point_two_y = output[vertex_index+1];
+          
+          if((point_two_z*1000000) == 0){ point_two_z = 0.000001; }
+          if((point_two_y*1000000) == 0){ point_two_y = 0.000001; }
+          
+          
+          //pythagerom therom
+          let adjacent_opposite_hypotenus = get_two_dimensional_adjacent_opposite_hypotenus(0, 0, point_two_z, point_two_y);
+        
+          //determine angle
+          let three_hundred_and_sixty_degrees_as_radians = get_two_dimensional_angle_as_radians_z_rotation(adjacent_opposite_hypotenus.adjacent, adjacent_opposite_hypotenus.hypotenus, 0, 0, point_two_z, point_two_y);
+					
+          //apply desired rotation
+          let rotated_point = get_two_dimensional_apply_desired_rotation(three_hundred_and_sixty_degrees_as_radians, offset_x_rotation, adjacent_opposite_hypotenus.hypotenus);
+      
+          
+          
+          output[vertex_index+2] = rotated_point.rotated_x;
+          output[vertex_index+1] = rotated_point.rotated_y;
+          
+          //next row
+          vertex_index = vertex_index + 3;
+          row = row + 1;
+        }
+         
+        return output;
+      }
+      
+       //translate rotation y
+      render_frame_translate_rotation_y = function(vertex_to_translate_rotation_thereof, total_rows_within_vertex, offset_y_rotation)
+      {
+        let output = new Float32Array(vertex_to_translate_rotation_thereof);
+        
+        //only support top right starting position(this is closest to the "camera" and to the right).
+        
+        let vertex_index = 0;
+        let row = 0;
+        while(row < total_rows_within_vertex)
+        {
+          //point two x and y.
+          let point_two_z = output[vertex_index+2];
+          let point_two_x = output[vertex_index];
+          
+          if((point_two_z*1000000) == 0){ point_two_z = 0.000001; }
+          if((point_two_x*1000000) == 0){ point_two_x = 0.000001; }
+          
+          
+          //pythagerom therom
+          let adjacent_opposite_hypotenus = get_two_dimensional_adjacent_opposite_hypotenus(0, 0, point_two_z, point_two_x);
+        
+          //determine angle
+          let three_hundred_and_sixty_degrees_as_radians = get_two_dimensional_angle_as_radians_z_rotation(adjacent_opposite_hypotenus.adjacent, adjacent_opposite_hypotenus.hypotenus, 0, 0, point_two_z, point_two_x);
+					
+          //apply desired rotation
+          let rotated_point = get_two_dimensional_apply_desired_rotation(three_hundred_and_sixty_degrees_as_radians, offset_y_rotation, adjacent_opposite_hypotenus.hypotenus);
+      
+          
+          
+          output[vertex_index+2] = rotated_point.rotated_x;
+          output[vertex_index] = rotated_point.rotated_y;
+          
+          //next row
+          vertex_index = vertex_index + 3;
+          row = row + 1;
+        }
+         
+        return output;
+      }
+      
+      //translate rotation z
+      render_frame_translate_rotation_z = function(vertex_to_translate_rotation_thereof, total_rows_within_vertex, offset_z_rotation)
+      {
+        let output = new Float32Array(vertex_to_translate_rotation_thereof);
+        
+        //only support top right starting position(this is closest to the "camera" and to the right).
+        
+        let vertex_index = 0;
+        let row = 0;
+        while(row < total_rows_within_vertex)
+        {
+          //point two x and y.
+          let point_two_x = output[vertex_index];
+          let point_two_y = output[vertex_index+1];
+          
+          if((point_two_x*1000000) == 0){ point_two_x = 0.000001; }
+          if((point_two_y*1000000) == 0){ point_two_y = 0.000001; }
+          
+          
+          //pythagerom therom
+          let adjacent_opposite_hypotenus = get_two_dimensional_adjacent_opposite_hypotenus(0, 0, point_two_x, point_two_y);
+        
+          //determine angle
+          let three_hundred_and_sixty_degrees_as_radians = get_two_dimensional_angle_as_radians_z_rotation(adjacent_opposite_hypotenus.adjacent, adjacent_opposite_hypotenus.hypotenus, 0, 0, point_two_x, point_two_y);
+      
+          //apply desired rotation
+          let rotated_point = get_two_dimensional_apply_desired_rotation(three_hundred_and_sixty_degrees_as_radians, offset_z_rotation, adjacent_opposite_hypotenus.hypotenus);
+      
+          
+          
+          output[vertex_index] = rotated_point.rotated_x;
+          output[vertex_index+1] = rotated_point.rotated_y;
+          
+          //next row
+          vertex_index = vertex_index + 3;
+          row = row + 1;
+        }
+         
+        return output;
+      }
+      
+      
+      //translate rotation assistant
+      get_two_dimensional_adjacent_opposite_hypotenus = function(point_one_x, point_one_y, point_two_x, point_two_y)
+      {
+        let output = { "adjacent": 0.000001,
+                       "opposite": 0.000001,
+                       "hypotenus": 0.000001
+                     };
+      
+        if((point_one_x*1000000) == 0){ point_one_x = 0.000001; }
+        if((point_one_y*1000000) == 0){ point_one_y = 0.000001; }
+        if((point_two_x*1000000) == 0){ point_two_x = 0.000001; }
+        if((point_two_y*1000000) == 0){ point_two_y = 0.000001; }
+      
+        let adjacent = point_one_x - point_two_x; 
+            adjacent = Math.abs(adjacent);
+              
+        let adjacent_squared = Math.pow(adjacent, 2);
+          
+        ////
+        let opposite = point_one_y - point_two_y;
+            opposite = Math.abs(opposite);
+              
+        let opposite_squared = Math.pow(opposite, 2);
+          
+        ///ensure adjacent and opposite are not absolute zero.
+        if((adjacent * 1000000) == 0)
+        {
+          adjacent = 0.000001;
+        }
+          
+        if((opposite * 1000000) == 0)
+        {
+          opposite = 0.000001;
+        }
+          
+        let a_squared_plus_b_squared = adjacent_squared + opposite_squared;
+        let hypotenus = Math.sqrt(a_squared_plus_b_squared);
+        
+        
+        output.adjacent = adjacent;
+        output.opposite = opposite;
+        output.hypotenus = hypotenus;
+        
+        return output;
+      }
+			
+			
+		
+      get_two_dimensional_angle_as_radians_z_rotation = function(adjacent, hypotenus, point_one_x, point_one_y, point_two_x, point_two_y)
+      {
+        let angle_as_radians = undefined;
+      
+        //if any of the points are zero they must be 0.000001 as an integer or magnitude calculations (hypotenus and rotated point combonation results) will be non existent, the result of this function should be uploaded to the gpu and not alter the model data within the source(usually the CPU, or the hardrive when saving the state of the game, make sure to interject and replace with zeros decimals where nessecary if this is being used to store states within long term storage sources or CPU ram dataline transfers), or spin-out-of-control(or strange precision rotations of objects) will happen after a long peroid of time with seemingly no end to debugging.
+        if((point_one_x*1000000) == 0){ point_one_x = 0.000001; }
+        if((point_one_y*1000000) == 0){ point_one_y = 0.000001; }
+        if((point_two_x*1000000) == 0){ point_two_x = 0.000001; }
+        if((point_two_y*1000000) == 0){ point_two_y = 0.000001; }
+        
+        //Determine if starting point(point one x y) is on a quadrant or an exact plane, there is no zero x, zero y during these calculations due to the magnitude determination collapse problem.
+        let quadrant = undefined; //0 = bottom-left to top-right(0-90), 1 = bottom-right to top-left(90-180), 2 = top-right to bottom-left(180-270), 3 = top-left to bottom-right(270-360).
+        let exact_plane = undefined; //0 = left to exactly right(0), 1 = bottom to exactly top(90), 2 = right to exactly left(180), 3 = top to exactly bottom(270).
+        
+        
+        //a conversion to integers then comparision in integers is garunteed while decimal only comparisons will garuntee error/failure without debugging possibilities had you not known this about transistor computation flaws.
+        let point_one_x_integer = point_one_x*1000000;
+        let point_one_y_integer = point_one_y*1000000;
+        let point_two_x_integer = point_two_x*1000000;
+        let point_two_y_integer = point_two_y*1000000;
+        //the following conditionals are upon an infinite grid with no orientation until exactly upon determiniation when checked by the second point x and y coordinates. the starting point is finite while the ending point is both finite and infinite in order to discover a floating angle direction of a precision of eight directions(up, right, down, left and their diagonals).
+        if(point_one_x_integer > point_two_x_integer)
+        {
+          if(point_one_y_integer > point_two_y_integer)
+          {
+            //start is exactly somewhere finite within the top right, second point is some where in a finite but only known as infinite angle within the bottom left.
+            quadrant = 2;
+          }else if(point_one_y_integer < point_two_y_integer)
+          {
+            //start is exactly somewhere finite within the bottom right, second point is some where in a finite but only known as infinite angle within the top left.
+            quadrant = 1;
+          }else if(point_one_y_integer == point_two_y_integer)
+          {
+            //start is exactly right of second x y coordinates, second point is exactly left of first point.
+            exact_plane = 2;
+          }
+        }else if(point_one_x_integer < point_two_x_integer)
+        {
+          if(point_one_y_integer > point_two_y_integer)
+          {
+            //start is exactly top left, second point is bottom right.
+            quadrant = 3;
+          }else if(point_one_y_integer < point_two_y_integer)
+          {
+            //start is exactly bottom-left and second point is top-right.
+            quadrant = 0;
+          }else if(point_one_y_integer == point_two_y_integer)
+          {
+            //start is exactly left, second point is exactly right.
+            exact_plane = 0;
+          }
+        }else if(point_one_x_integer == point_two_x_integer)
+        {
+          if(point_one_y_integer > point_two_y_integer)
+          {
+            //exact start is top and exact second point is bottom.
+            exact_plane = 3;
+          }else if(point_one_y_integer < point_two_y_integer)
+          {
+            //exact start is bottom and exact second point is top.
+            exact_plane = 1;
+          }
+        }
+        
+        
+        //angle with a precision of eight directions is determined, now to determine the magnitude of the line.
+        three_hundred_and_sixty_degrees_as_radians = undefined;
+        if((adjacent*1000000) == 0)
+        {
+          adjacent = 0.000001;
+        }
+       
+        //determine angle as radians.
+        if(quadrant !== undefined)
+        {
+          if(quadrant == 0)
+          {
+            //zero to ninety, top right.
+            three_hundred_and_sixty_degrees_as_radians = Math.acos(adjacent / hypotenus);
+          }else if(quadrant == 1)
+          {
+            //nintey to one hundred and eighty, top left.
+            three_hundred_and_sixty_degrees_as_radians = 3.141592 - Math.acos(adjacent / hypotenus);
+          }else if(quadrant == 2)
+          {
+            //one hundred and eighty to two hundred and seventy, bottom left.
+            three_hundred_and_sixty_degrees_as_radians = 3.141592 + Math.acos(adjacent / hypotenus);
+          }else if(quadrant == 3)
+          {
+            //two hundred and seventy to three hundred and sixty, bottom right
+            three_hundred_and_sixty_degrees_as_radians = 3.141592 + (3.141592 - Math.acos(adjacent / hypotenus));
+          }
+        }else if(exact_plane !== undefined)
+        {
+          if(exact_plane == 0)
+          {
+            //zero degrees
+            three_hundred_and_sixty_degrees_as_radians = 0.000000;
+          }else if(exact_plane == 1)
+          {
+            //ninety degrees
+            three_hundred_and_sixty_degrees_as_radians = 1.570796;
+          }else if(exact_plane == 2)
+          {
+            //one hundred and eighty degrees
+            three_hundred_and_sixty_degrees_as_radians = 3.141592;
+          }else if(exact_plane == 3)
+          {
+            //two hundred and seventy
+            three_hundred_and_sixty_degrees_as_radians = 4.712388;
+          }
+        }
+        //define angle as radians that has been calculated.
+        angle_as_radians = three_hundred_and_sixty_degrees_as_radians;
+        
+        //return angle in radians format 
+        return angle_as_radians;
+      }
+      
+      
+      get_two_dimensional_apply_desired_rotation = function(current_angle_as_radians, offset_angle_as_radians, hypotenus)
+      {
+        let output = { "rotated_x": 0.000000,
+                       "rotated_y": 0.000000
+                     };
+         
+        let rotated_angle = 0.000000;
+            rotated_angle += current_angle_as_radians;
+            rotated_angle += offset_angle_as_radians;
+          
+        
+        let rotated_x = hypotenus * Math.cos(rotated_angle);
+        let rotated_y = hypotenus * Math.sin(rotated_angle);
+        
+        
+        output.rotated_x = rotated_x;
+        output.rotated_y = rotated_y;
+        
+        return output;
+      }
+      
+      alter_coordinate_for_vanishing_point_compensation = function(vertex_to_manipulate, total_rows_within_vertex)
+      {
+        let output = new Float32Array(vertex_to_manipulate);
+        
+       
+        let vertex_index = 0;
+        let row = 0;
+        while(row < total_rows_within_vertex)
+        {
+          //point two x and y.
+          let point_one_x = output[vertex_index];
+          let point_one_y = output[vertex_index+1];
+          let point_one_z = output[vertex_index+2];
+          
+          if((point_one_x*1000000) == 0){ point_one_x = 0.000001; }
+          if((point_one_y*1000000) == 0){ point_one_y = 0.000001; }
+          if((point_one_z*1000000) == 0){ point_one_y = 0.000001; }
+          
+          
+          output[vertex_index] = output[vertex_index] / (1+output[vertex_index+2]);
+          output[vertex_index+1] = output[vertex_index+1] / (1+output[vertex_index+2]);
+          
+
+          //next row
+          vertex_index = vertex_index + 3;
+          row = row + 1;
+        }
+         
+        return output;
+      }
+      
+			
+			//scene
+			  //major scene one
+				tick_scene_major_one = function(timepassed_since_last_game_tick)
+				{
+					//minor scene one
+					if(scene_minor_scene == 1)
+					{
+						//prestage
+						if(scene_prestage_scene == 1)
+						{
+							/*
+							//initialize metadata and holders to various image data to be used for this major and minor scene combonation.
+							scene_major_one_minor_one_image_elements["yellow_to_pink_gradient"] = { "rgba_data":null, "rgba_data_available": false, "dimensions": { "width": 200, "height": 200} };
+							
+							//initialize xhr request to load gradient.
+							image_element_download_xhr_status = 1;
+							image_element_download_xhr_request = new XMLHttpRequest();
+							image_element_download_xhr_request.responseType = "arraybuffer";
+							image_element_download_xhr_request.addEventListener("load", image_element_download_xhr_request_status_loaded, false);
+							image_element_download_xhr_request.open("GET", "http://shastaexchange.com/webgl/yellow_to_pink_gradient.rgba");
+							image_element_download_xhr_request.send();
+							*/
+							
+							//define list of textures to download
+							  //yellow to pink gradient
+					  		texture_catalogue["yellow_to_pink_gradient"] = {};
+						  	texture_catalogue["yellow_to_pink_gradient"] = JSON.parse(JSON.stringify(texture_catalogue_cloneable_entry));
+							
+						  	texture_catalogue["yellow_to_pink_gradient"].rgba_data_url = "http://shastaexchange.com/webgl/yellow_to_pink_gradient.rgba";
+							  texture_catalogue["yellow_to_pink_gradient"].dimensions.width = 200;
+								texture_catalogue["yellow_to_pink_gradient"].dimensions.height = 200;
+								
+								//yellow smile face
+								texture_catalogue["yellow_smile_face"] = {};
+							  texture_catalogue["yellow_smile_face"] = JSON.parse(JSON.stringify(texture_catalogue_cloneable_entry));
+							
+							  texture_catalogue["yellow_smile_face"].rgba_data_url = "http://shastaexchange.com/webgl/yellow_smile_face.rgba";
+							  texture_catalogue["yellow_smile_face"].dimensions.width = 845;
+								texture_catalogue["yellow_smile_face"].dimensions.height = 845;
+								
+								
+							//reset current download target
+							texture_catalogue_current_download_target = null;
+							
+							//
+							scene_prestage_scene = 2
+							
+					  }else if(scene_prestage_scene == 2)
+						{
+							//find a download target(if not already "targeting")
+							if(texture_catalogue_current_download_target == null)
+							{
+								//find a target to download, if they are all downloaded go to scene: major one, minor one.
+								let list_of_keys = Object.keys(texture_catalogue);
+								let index = 0;
+								let keep_searching_for_next_target = 1;
+								while(keep_searching_for_next_target == 1)
+								{
+									if(index < list_of_keys.length)
+									{
+									  //has this texture been downloaded?
+									  if(texture_catalogue[list_of_keys[index]].rgba_data_downloaded == false)
+									  {
+											//flag current work is download manager(null means no more texture download work available)
+									    texture_catalogue_current_download_target = list_of_keys[index];
+										
+											//initiate download
+											//initialize xhr request to load gradient.
+											image_element_download_xhr_request_reponse_data = null;
+											image_element_download_xhr_request = null;
+											
+						     	    image_element_download_xhr_status = 1;
+							        image_element_download_xhr_request = new XMLHttpRequest();
+							        image_element_download_xhr_request.responseType = "arraybuffer";
+							        image_element_download_xhr_request.addEventListener("load", image_element_download_xhr_request_status_loaded, false);
+							        image_element_download_xhr_request.open("GET", texture_catalogue[texture_catalogue_current_download_target].rgba_data_url);
+							        image_element_download_xhr_request.send();
+							
+											
+									    keep_searching_for_next_target = 0;
+								    }
+									
+									  index = index + 1;
+								  }else if(index >= list_of_keys.length)
+									{
+										keep_searching_for_next_target = 0;
+									}
+								}
+							}
+							
+							
+							//if no targets found, move off prestage and on to the major one, minor one scene, otherwise, continue waiting for current target network response to download request.
+							if(texture_catalogue_current_download_target == null)
+							{
+								//still equals null, all targets have been downloaded.
+								scene_prestage_scene = 0;
+								console.log("scene");
+							}else if(texture_catalogue_current_download_target != null)
+							{
+								//continue waiting for target download response, load, error, abort, progress.
+								if(image_element_download_xhr_status == 1)
+								{
+									//update progress with a loading bar.
+									
+								}else if(image_element_download_xhr_status == 2)
+								{
+									//completly loaded this rgba data.
+									  //store data with a named referenceable data and metadata.
+									  let as_byte_array = new Uint8Array(image_element_download_xhr_request_reponse_data);
+									  
+										//store image data on cpu/ram relationship(reuseable with multiple vertices)
+										texture_catalogue[texture_catalogue_current_download_target].rgba_data = as_byte_array;
+										
+										//store image data on gpu/ram relationship(reuseable with multiple vertices and faster then reuploading every frame draw, can not verbalize why it should be jept on cpu ram also, im sure there is a gaming logic use for it?)
+									  let opengles_texture_buffer = opengles.createTexture();
+										opengles.bindTexture(opengles.TEXTURE_2D, opengles_texture_buffer);
+									  opengles.texImage2D(opengles.TEXTURE_2D, 0, opengles.RGBA, texture_catalogue[texture_catalogue_current_download_target].dimensions.width, texture_catalogue[texture_catalogue_current_download_target].dimensions.height, 0, opengles.RGBA, opengles.UNSIGNED_BYTE, texture_catalogue[texture_catalogue_current_download_target].rgba_data);
+									    //do store refernceable variable
+										  texture_catalogue[texture_catalogue_current_download_target].opengles_texture_buffer = opengles_texture_buffer;
+								
+								  
+									texture_catalogue[texture_catalogue_current_download_target].rgba_data_downloaded = true;
+									image_element_download_xhr_status = 0;
+											
+									//flag no work is currently being accomplished.
+									texture_catalogue_current_download_target = null;
+								}
+							}
+							
+							/**
+							//respond to outcome of image element download.
+							if(image_element_download_xhr_status == 2)
+							{
+								//image data aquired succesfully.
+								  //store data with a named referenceable data and metadata.
+									let as_byte_array = new Uint8Array(image_element_download_xhr_request_reponse_data);
+									
+									scene_major_one_minor_one_image_elements["yellow_to_pink_gradient"].rgba_data = as_byte_array;
+									scene_major_one_minor_one_image_elements["yellow_to_pink_gradient"].rgba_data_available = true;
+									
+									//transfer data to graphics chip.
+									triangle_texture_opengles = opengles.createTexture();
+									opengles.bindTexture(opengles.TEXTURE_2D, triangle_texture_opengles);
+									opengles.texImage2D(opengles.TEXTURE_2D, 0, opengles.RGBA, scene_major_one_minor_one_image_elements["yellow_to_pink_gradient"].dimensions.width, scene_major_one_minor_one_image_elements["yellow_to_pink_gradient"].dimensions.height, 0, opengles.RGBA, opengles.UNSIGNED_BYTE, scene_major_one_minor_one_image_elements["yellow_to_pink_gradient"].rgba_data);
+									
+									
+									
+									triangle_texture_coordinates_opengles = opengles.createBuffer();
+									opengles.bindBuffer(opengles.ARRAY_BUFFER, triangle_texture_coordinates_opengles);
+									opengles.bufferData(opengles.ARRAY_BUFFER, new Float32Array(triangle_texture_coordinates), opengles.STATIC_DRAW);
+									
+									image_element_download_xhr_status = 0;
+									scene_prestage_scene = 0;
+							}else{
+								//if doesnt equal any (reasonable)status, then check if timeout time 
+							}
+							*/
+						}else if(scene_prestage_scene == 0)
+						{
+							if(scene_major_scene == 1)
+							{
+								if(scene_minor_scene == 1)
+								{
+								  //minor scene one logic
+							    triangle_metadata.rotation.y -= 0.01;
+                  triangle_metadata.rotation.z = -0.2;
+                  triangle_metadata.rotation.x = 1.0;
+									//triangle_metadata.position.y -= 0.01;
+									
+								}
+							}
+						}
+					}
+				}
+    </script>
+  </head>
+  <body onLoad="start_render();">
+    <canvas id="canvas_for_opengles" width="800" height="800"></canvas>
+  </body>
+</html>
