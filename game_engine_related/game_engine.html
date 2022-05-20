@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <title>Music dodge and gather</title>
+    <title>Music Dodge and Gather Game</title>
     <script type="text/javascript">
       /* Venmo: Shane-Betz1990 */
       
@@ -41,7 +41,6 @@
 				//model definitions
           //multicolored triangle
           var triangle_vertex = null;
-          var triangle_rgba_color = null;
           var triangle_total_rows = null;
           var triangle_vertex_opengles = null;
           var triangle_metadata = { "position": { "x": 0.000000, "y": 0.000000, "z": 0.000000 },
@@ -55,7 +54,6 @@
 				
 				  //square to point towards
 				  var square_vertex = null;
-				  var square_rgba_color = null;
 			  	var square_total_rows = null;
 			  	var square_vertex_opengles = null;
 			  	var square_metadata = { "position": { "x": 0.000000, "y": 0.000000, "z": 0.000000 },
@@ -298,13 +296,13 @@
                                     //bottom left
                                     0.20, -0.20, 0.20, 
                                     //bottom right
-                                    0.20, -0.20, -0.2, 
+                                    0.20, -0.20, 0.2, 
                                   
                                   /* third triangle left side facing camera */
                                     //top 
                                     0.01, 0.01, 0.0, 
                                     //bottom left
-                                    -0.20, -0.20, -0.2, 
+                                    -0.20, -0.20, 0.2, 
                                     //bottom right
                                     -0.20, -0.20, 0.2, 
                                   
@@ -312,9 +310,9 @@
                                     //top
                                     0.01, 0.01, 0.0, 
                                     //bottom right
-                                    0.20, -0.20, -0.2, 
+                                    0.20, -0.20, 0.2, 
                                     //bottom left
-                                    -0.20, -0.20, -0.2, 
+                                    -0.20, -0.20, 0.2, 
                                 
                                              ]);
                                              
@@ -365,13 +363,13 @@
          
        //define square, proverbial ground vertex
 			 square_vertex = new Float32Array([
-			                                    1.0, 1.0, 0.5,
-																					-1.0, 1.0, 0.5,
-																					-1.0, -1.0, 0.0,
+			                                    1.0, 1.0, 0.9,
+																					-1.0, 1.0, 0.9,
+																					-1.0, -1.0, 0.9,
 																					
-																					1.0, 1.0, 0.5,
-																					-1.0, -1.0, 0.0,
-																					1.0, -1.0, 0.0
+																					1.0, 1.0, 0.9,
+																					-1.0, -1.0, 0.9,
+																					1.0, -1.0, 0.9
 			                                  ]);
 																				
 			 square_texture_coordinates = new Float32Array([
@@ -394,7 +392,7 @@
        
     
        //render frame loop
-       render_frame_interval = (1000 / 30); //target frame per second, 1000 milliseconds divided by target frame rate;
+       render_frame_interval = 1000;  // (1000 / 30); //target frame per second, 1000 milliseconds divided by target frame rate;
        let syncronized_timestamp = Date.now();
        render_frame_last_rendered_timestamp = syncronized_timestamp;
        tick_game_conditions_last_tick_timestamp = syncronized_timestamp;
@@ -455,7 +453,7 @@
 				
 				 
          //perspective
-         triangle_vertex_manipulated = alter_coordinate_for_vanishing_point_compensation(triangle_vertex_manipulated, triangle_total_rows);
+         triangle_vertex_manipulated = alter_coordinate_for_vanishing_point_compensation(triangle_vertex_manipulated, triangle_total_rows, 2);
       
        
          //triangle_and_rgba_color_vertex_manipulated = combine_vertex_and_rgba_color(triangle_vertex_manipulated, triangle_rgba_color, triangle_total_rows);
@@ -516,7 +514,7 @@
         
          
          //perspective
-         square_vertex_manipulated = alter_coordinate_for_vanishing_point_compensation(square_vertex_manipulated, square_total_rows);
+         square_vertex_manipulated = alter_coordinate_for_vanishing_point_compensation(square_vertex_manipulated, square_total_rows, 2);
       
        
          //triangle_and_rgba_color_vertex_manipulated = combine_vertex_and_rgba_color(triangle_vertex_manipulated, triangle_rgba_color, triangle_total_rows);
@@ -914,10 +912,10 @@
         return output;
       }
       
-      alter_coordinate_for_vanishing_point_compensation = function(vertex_to_manipulate, total_rows_within_vertex)
+      alter_coordinate_for_vanishing_point_compensation = function(vertex_to_manipulate, total_rows_within_vertex, vanishing_z_coordinate)
       {
         let output = new Float32Array(vertex_to_manipulate);
-        
+      
        
         let vertex_index = 0;
         let row = 0;
@@ -930,12 +928,29 @@
           
           if((point_one_x*1000000) == 0){ point_one_x = 0.000001; }
           if((point_one_y*1000000) == 0){ point_one_y = 0.000001; }
-          if((point_one_z*1000000) == 0){ point_one_y = 0.000001; }
-          
-          
-          output[vertex_index] = output[vertex_index] / (1+output[vertex_index+2]);
-          output[vertex_index+1] = output[vertex_index+1] / (1+output[vertex_index+2]);
-          
+          if((point_one_z*1000000) == 0){ point_one_z = 0.000001; }
+				
+					//z value of zero is non modified x and y scaling.
+					//z value of one is a modified x and y scaling of zero x and y.
+					//z value of half is a modified x and y scaling of x = x * 0.5;
+					//z value of o.8 is a modified x and y scaling of x = x * 0.8;
+						
+					//completly vabished is one or more.
+					let new_x = point_one_x - (point_one_x * point_one_z);
+					output[vertex_index] = new_x;
+					
+					let new_y = point_one_y - (point_one_y * point_one_z);
+					output[vertex_index+1] = new_y;
+					
+					//console.log(point_one_x);
+					 /*point_one_x = point_one_x * z_percentage_modifier;
+					 point_one_y = point_one_y * z_percentage_modifier;
+					
+          console.log(point_one_x);
+					console.log("");
+          output[vertex_index] = point_one_x;
+          output[vertex_index+1] = point_one_y;
+          */
 
           //next row
           vertex_index = vertex_index + 3;
@@ -956,19 +971,6 @@
 						//prestage
 						if(scene_prestage_scene == 1)
 						{
-							/*
-							//initialize metadata and holders to various image data to be used for this major and minor scene combonation.
-							scene_major_one_minor_one_image_elements["yellow_to_pink_gradient"] = { "rgba_data":null, "rgba_data_available": false, "dimensions": { "width": 200, "height": 200} };
-							
-							//initialize xhr request to load gradient.
-							image_element_download_xhr_status = 1;
-							image_element_download_xhr_request = new XMLHttpRequest();
-							image_element_download_xhr_request.responseType = "arraybuffer";
-							image_element_download_xhr_request.addEventListener("load", image_element_download_xhr_request_status_loaded, false);
-							image_element_download_xhr_request.open("GET", "http://shastaexchange.com/webgl/yellow_to_pink_gradient.rgba");
-							image_element_download_xhr_request.send();
-							*/
-							
 							//define list of textures to download
 							  //yellow to pink gradient
 					  		texture_catalogue["yellow_to_pink_gradient"] = {};
@@ -1075,34 +1077,7 @@
 								}
 							}
 							
-							/**
-							//respond to outcome of image element download.
-							if(image_element_download_xhr_status == 2)
-							{
-								//image data aquired succesfully.
-								  //store data with a named referenceable data and metadata.
-									let as_byte_array = new Uint8Array(image_element_download_xhr_request_reponse_data);
-									
-									scene_major_one_minor_one_image_elements["yellow_to_pink_gradient"].rgba_data = as_byte_array;
-									scene_major_one_minor_one_image_elements["yellow_to_pink_gradient"].rgba_data_available = true;
-									
-									//transfer data to graphics chip.
-									triangle_texture_opengles = opengles.createTexture();
-									opengles.bindTexture(opengles.TEXTURE_2D, triangle_texture_opengles);
-									opengles.texImage2D(opengles.TEXTURE_2D, 0, opengles.RGBA, scene_major_one_minor_one_image_elements["yellow_to_pink_gradient"].dimensions.width, scene_major_one_minor_one_image_elements["yellow_to_pink_gradient"].dimensions.height, 0, opengles.RGBA, opengles.UNSIGNED_BYTE, scene_major_one_minor_one_image_elements["yellow_to_pink_gradient"].rgba_data);
-									
-									
-									
-									triangle_texture_coordinates_opengles = opengles.createBuffer();
-									opengles.bindBuffer(opengles.ARRAY_BUFFER, triangle_texture_coordinates_opengles);
-									opengles.bufferData(opengles.ARRAY_BUFFER, new Float32Array(triangle_texture_coordinates), opengles.STATIC_DRAW);
-									
-									image_element_download_xhr_status = 0;
-									scene_prestage_scene = 0;
-							}else{
-								//if doesnt equal any (reasonable)status, then check if timeout time 
-							}
-							*/
+							
 						}else if(scene_prestage_scene == 0)
 						{
 							if(scene_major_scene == 1)
