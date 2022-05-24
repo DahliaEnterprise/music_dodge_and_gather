@@ -63,6 +63,7 @@
 																				"vertex_rgba_url": null,
 																				"vertex_texture_coordinates": null, 
 																				"vertex_texture_coordinates_downloaded": false,
+																				"vertex_texture_coordinates_url": null,
 																				"texture_catalogue_name": null, 
 																				"metadata": {
 																					            "position": { "x": 0.000000, "y": 0.000000, "z": 0.000000 },
@@ -154,6 +155,13 @@
 			{
 				image_element_download_xhr_status = 2;
 				image_element_download_xhr_request_reponse_data = image_element_download_xhr_request.response;
+			}
+			
+			vertex_element_download_xhr_request_status_loaded = function(event)
+			{
+				vertex_element_download_xhr_status = 2;
+				vertex_element_download_xhr_request_reponse_data = vertex_element_download_xhr_request.response;
+				
 			}
 			
       combine_vertex_and_rgba_color = function(vertex, rgba_color, total_rows)
@@ -473,7 +481,10 @@
          opengles.clearColor(0.0, 0.0, 0.0, 1.0);
          opengles.viewport(0, 0, opengles.viewportWidth, opengles.viewportHeight);
          opengles.clear(opengles.COLOR_BUFFER_BIT);
-        
+          
+				 //needs to be changed to stage specific render functions
+				 
+				 /*
          //draw multi colored triangle
          let triangle_vertex_manipulated = new Float32Array(triangle_vertex);
          
@@ -604,7 +615,7 @@
          triangle_vertex_opengles = null;
 				 opengles.deleteBuffer(square_vertex_opengles);
 				 square_vertex_opengles = null;
-        
+        */
       
          render_frame_last_rendered_timestamp = Date.now();
         
@@ -1055,7 +1066,7 @@
 							}
 							
 							
-							//if no targets found, move off prestage and on to the major one, minor one scene, otherwise, continue waiting for current target network response to download request.
+							//if no targets found, move to next prestage , continue waiting for current target network response to download request.
 							if(texture_catalogue_current_download_target == null)
 							{
 								//still equals null, all targets have been downloaded.
@@ -1097,11 +1108,13 @@
 							
 						}else if(scene_prestage_scene == 3)
 						{
+							
 							//define list of vertex coordinate and texture coordinates to download.
 							model_catalogue["ui_progress_bar_orange_style_border"] = {};
 							model_catalogue["ui_progress_bar_orange_style_border"] = JSON.parse(JSON.stringify(model_cloneable_entry));
 							
 							model_catalogue["ui_progress_bar_orange_style_border"].vertex_data_url = "http://shastaexchange.com/music_dodge_and_gather/models/user_interface/progress_bar_orange/progress_bar_orange_border.xyz_coordinates";
+							model_catalogue["ui_progress_bar_orange_style_border"].vertex_type = 2;
 							model_catalogue["ui_progress_bar_orange_style_border"].vertex_texture_coordinates_url = "http://shastaexchange.com/music_dodge_and_gather/models/user_interface/progress_bar_orange/progress_bar_orange_border.xy_texture_coordinates";
 						  
 							//reset current download target
@@ -1112,6 +1125,8 @@
 							scene_prestage_scene = 4;
 							
 						}else if(scene_prestage_scene == 4)
+						{
+						
 						  //find a download target(if not already "targeting")
 							if(model_catalogue_current_download_target == null)
 							{
@@ -1130,20 +1145,49 @@
 									    model_catalogue_current_download_target = list_of_keys[index];
 										
 											//initiate download
-											//initialize xhr request to load gradient.
-											model_element_download_xhr_request_reponse_data = null;
-											morel_element_download_xhr_request = null;
+											//initialize xhr request to vertex coordinates.
+											vertex_element_download_xhr_request_reponse_data = null;
+											vertex_element_download_xhr_request = null;
 											
-						     	    model_element_download_xhr_status = 1;
-							        model_element_download_xhr_request = new XMLHttpRequest();
-							        model_element_download_xhr_request.responseType = "arraybuffer";
-							        model_element_download_xhr_request.addEventListener("load", model_element_download_xhr_request_status_loaded, false);
-							        model_element_download_xhr_request.open("GET", model_catalogue[model_catalogue_current_download_target].vertex_data_url);
-							        model_element_download_xhr_request.send();
+						     	    vertex_element_download_xhr_status = 1;
+							        vertex_element_download_xhr_request = new XMLHttpRequest();
+							        vertex_element_download_xhr_request.responseType = "arraybuffer";
+							        vertex_element_download_xhr_request.addEventListener("load", vertex_element_download_xhr_request_status_loaded, false);
+							        vertex_element_download_xhr_request.open("GET", model_catalogue[model_catalogue_current_download_target].vertex_data_url);
+							        vertex_element_download_xhr_request.send();
 							
-											
+											console.log(model_catalogue[model_catalogue_current_download_target].vertex_data_url);
 									    keep_searching_for_next_target = 0;
-								    }
+								    }else if(model_catalogue[list_of_keys[index]].vertex_data_downloaded == true)
+										{
+											if(model_catalogue[list_of_keys[index]].vertex_type == 1)
+											{
+												
+											}else if(model_catalogue[list_of_keys[index]].vertex_type == 2)
+											{
+												if(model_catalogue[list_of_keys[index]].vertex_texture_coordinates_downloaded == false)
+												{
+										  		//download texture coordinates.
+										  		//flag current work is download manager(null means no more texture download work available)
+									        model_catalogue_current_download_target = list_of_keys[index];
+										
+										    	//initiate download
+									    		//initialize xhr request to texture coordinates.
+									     		vertex_element_download_xhr_request_reponse_data = null;
+										    	vertex_element_download_xhr_request = null;
+											
+						     	        vertex_element_download_xhr_status = 1;
+							            vertex_element_download_xhr_request = new XMLHttpRequest();
+							            vertex_element_download_xhr_request.responseType = "arraybuffer";
+							            vertex_element_download_xhr_request.addEventListener("load", vertex_element_download_xhr_request_status_loaded, false);
+							            vertex_element_download_xhr_request.open("GET", model_catalogue[model_catalogue_current_download_target].vertex_texture_coordinates_url);
+							            vertex_element_download_xhr_request.send();
+							
+											    console.log(model_catalogue[model_catalogue_current_download_target].vertex_texture_coordinates_url);
+									        keep_searching_for_next_target = 0;
+											  }
+											}
+										}
 									
 									  index = index + 1;
 								  }else if(index >= list_of_keys.length)
@@ -1161,25 +1205,38 @@
 								
 							}else if(model_catalogue_current_download_target != null)
 							{
+								
 								//continue waiting for target download response, load, error, abort, progress.
-								if(model_element_download_xhr_status == 1)
+								if(vertex_element_download_xhr_status == 1)
 								{
 									//update progress with a loading bar.
 									//the progress bar elements are being downloaded.
 									
-								}else if(model_element_download_xhr_status == 2)
+								}else if(vertex_element_download_xhr_status == 2)
 								{
 									//completly loaded this vertex(or rgba or texture coordinate data) data.
 									  //store data with a named referenceable data and metadata.
-									  let as_byte_array = new Uint8Array(model_element_download_xhr_request_reponse_data);
+									  let as_byte_array = new Uint8Array(vertex_element_download_xhr_request_reponse_data);
 									  
 										//store data on cpu/ram relationship(reuseable with multiple vertices)
-										model_catalogue[texture_catalogue_current_download_target].rgba_data = as_byte_array;
+										if(model_catalogue[model_catalogue_current_download_target].vertex_data_downloaded == false)
+										{
+										  model_catalogue[model_catalogue_current_download_target].vertex = as_byte_array;
+										  model_catalogue[model_catalogue_current_download_target].vertex_data_downloaded = true;
 										
-										
+										}else if(model_catalogue[model_catalogue_current_download_target].vertex_data_downloaded == true)
+										{
+											if(model_catalogue[model_catalogue_current_download_target].vertex_type == 1)
+											{
+												
+											}else if(model_catalogue[model_catalogue_current_download_target].vertex_type == 2)
+											{
+												model_catalogue[model_catalogue_current_download_target].vertex_texture_coordinates = as_byte_array;
+										    model_catalogue[model_catalogue_current_download_target].vertex_texture_coordinates_downloaded = true;
+											}
+										}
 								  
-									model_catalogue[model_catalogue_current_download_target].rgba_data_downloaded = true;
-									model_element_download_xhr_status = 0;
+										model_element_download_xhr_status = 0;
 											
 									//flag no work is currently being accomplished.
 									model_catalogue_current_download_target = null;
@@ -1190,7 +1247,12 @@
 						{
 							//progress bar elements downloaded and displayable.
 							//render progress bar according to progress of doenloading video game elements(collect models, dodge models, audio data, audio metadata syncronization points, and collect model positions in accordance to song and dodge model positions in accordance to song)
-					  }else if(scene_prestage_scene == 0)
+					    alert("prestage five");
+							
+							//temp
+							scene_prestage_scene = 0;
+					
+						}else if(scene_prestage_scene == 0)
 						{
 							if(scene_major_scene == 1)
 							{
