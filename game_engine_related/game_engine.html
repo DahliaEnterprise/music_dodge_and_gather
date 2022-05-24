@@ -55,6 +55,7 @@
 				  //model cloneable entry
 					var model_cloneable_entry = { 
 						                            "vertex": null,
+																				"vertec_total_rows": null,
 																				"vertex_data_downloaded": false,
 																				"vertex_data_url": null,
 					                              "vertex_type":0,
@@ -143,6 +144,9 @@
 			var scene_prestage_scene = null;
 			var scene_major_scene = null;
 			var scene_minor_scene = null;
+			
+			  //prestage scene render specific.
+				var scene_render_major_one_minor_one_prestage_five = null;
 			
 			  //scene major one
 				var tick_scene_major_one = null;
@@ -319,7 +323,7 @@
         {
           alert("shader link failed");
          }
-				
+				/*
        //define triangle vertex.
        triangle_vertex = new Float32Array([ /*
                                               1.0, -0.1, -0.5,
@@ -378,7 +382,7 @@
                                                   
                                                   
                                                   
-                                                ]);      */
+                                                ]);      
 																							
 			 	//texture coordinates stay the same(more often then not), so keep them on tje graphics chip.
 				triangle_texture_coordinates = [
@@ -402,7 +406,6 @@
        triangle_total_rows = 12;
        
 			 
-         
        //define square, proverbial ground vertex
 			 square_vertex = new Float32Array([
 			                                    1.0, 1.0, 0.9,
@@ -425,7 +428,7 @@
 			                                               ]);
 													
 			 square_total_rows = 6;		
-																										 
+																		*/								 
 			 //set scene parameters to initial/zero
 			 scene_prestage_scene = 1;
 			 scene_major_scene = 1;
@@ -483,6 +486,18 @@
          opengles.clear(opengles.COLOR_BUFFER_BIT);
           
 				 //needs to be changed to stage specific render functions
+				 if(scene_major_scene_one == 1)
+				 {
+				   if(scene_minor_scene_one == 1)
+					 {
+					   if(scene_prestage_scene == 5)
+						 {
+							 scene_render_major_one_minor_one_prestage_five(time_passed_since_last_render);
+						 }else if(scene_prestage_scene == 0)
+							 //now running major one minor one.
+						 }
+				   }
+				 }
 				 
 				 /*
          //draw multi colored triangle
@@ -998,6 +1013,12 @@
       
 			
 			//scene
+			  //scene render specific
+				time_passed_since_last_render = function(timepassed_since_last_game_tick)
+				{
+					
+				}
+			
 			  //major scene one
 				tick_scene_major_one = function(timepassed_since_last_game_tick)
 				{
@@ -1247,27 +1268,14 @@
 						{
 							//progress bar elements downloaded and displayable.
 							//render progress bar according to progress of doenloading video game elements(collect models, dodge models, audio data, audio metadata syncronization points, and collect model positions in accordance to song and dodge model positions in accordance to song)
-					    alert("prestage five");
+					    
 							
-							//temp
-							scene_prestage_scene = 0;
+						
 					
 						}else if(scene_prestage_scene == 0)
 						{
-							if(scene_major_scene == 1)
-							{
-								if(scene_minor_scene == 1)
-								{
-									//display progress bar, the progress bar moves based on the download progress of all required image elements and model elements and the audio file.
-								  
-									/*//minor scene one logic
-							    triangle_metadata.rotation.y -= 0.01;
-                  triangle_metadata.rotation.z = -0.2;
-                  triangle_metadata.rotation.x = 1.0;
-									//triangle_metadata.position.y -= 0.01;
-									*/
-								}
-							}
+							//now running scene major one, minor one.
+							
 						}
 					}
 				}
