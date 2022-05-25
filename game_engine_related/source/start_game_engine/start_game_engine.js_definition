@@ -1,0 +1,60 @@
+//
+start_game_engine_define_shader_source_codes = function()
+{
+  //things do not work when the shader source code is downloaded.
+	
+	//define solid color source code.
+	  //vertex
+	  shader_source_code_vertex_shader_solid_color = "";
+    shader_source_code_vertex_shader_solid_color = shader_source_code_vertex_shader_solid_color + "attribute vec4 position_of_vertex_to_colorize; \n";
+    shader_source_code_vertex_shader_solid_color = shader_source_code_vertex_shader_solid_color + "attribute vec4 color_of_vertex_to_colorize; \n";
+    shader_source_code_vertex_shader_solid_color = shader_source_code_vertex_shader_solid_color + "varying vec4 varying_color_of_vertex_to_colorize; \n";
+    shader_source_code_vertex_shader_solid_color = shader_source_code_vertex_shader_solid_color + "void main() { \n";
+    shader_source_code_vertex_shader_solid_color = shader_source_code_vertex_shader_solid_color + "  //colorize position.  \n";
+    shader_source_code_vertex_shader_solid_color = shader_source_code_vertex_shader_solid_color + "  gl_Position = position_of_vertex_to_colorize; \n";
+    shader_source_code_vertex_shader_solid_color = shader_source_code_vertex_shader_solid_color + "  varying_color_of_vertex_to_colorize = color_of_vertex_to_colorize;  \n";
+    shader_source_code_vertex_shader_solid_color = shader_source_code_vertex_shader_solid_color + "} \n";
+		
+    //fragment
+   	shader_source_code_fragment_shader_solid_color = "";
+    shader_source_code_fragment_shader_solid_color = shader_source_code_fragment_shader_solid_color + "precision mediump float;  \n";
+    shader_source_code_fragment_shader_solid_color = shader_source_code_fragment_shader_solid_color + "varying vec4 varying_color_of_vertex_to_colorize; \n";
+    shader_source_code_fragment_shader_solid_color = shader_source_code_fragment_shader_solid_color + "void main() { \n";
+    shader_source_code_fragment_shader_solid_color = shader_source_code_fragment_shader_solid_color + "  //Define filter \n";
+    shader_source_code_fragment_shader_solid_color = shader_source_code_fragment_shader_solid_color + "  gl_FragColor = varying_color_of_vertex_to_colorize; \n";
+    shader_source_code_fragment_shader_solid_color = shader_source_code_fragment_shader_solid_color + "} \n";
+  
+  //Define textured source code.
+	  //vertex
+		shader_source_code_vertex_texture  = "";
+		shader_source_code_vertex_texture  = shader_source_code_vertex_texture  + "attribute vec4 a_Position; \n";
+    shader_source_code_vertex_texture  = shader_source_code_vertex_texture  + "attribute vec2 a_TexCoord; \n";
+    shader_source_code_vertex_texture  = shader_source_code_vertex_texture  + "varying highp vec2 v_TexCoord; \n";
+    shader_source_code_vertex_texture  = shader_source_code_vertex_texture  + "void main(void) { \n";
+    shader_source_code_vertex_texture  = shader_source_code_vertex_texture + "  gl_Position = a_Position; \n"; 
+    shader_source_code_vertex_texture  = shader_source_code_vertex_texture  + "  v_TexCoord = a_TexCoord; \n"; 
+    shader_source_code_vertex_texture  = shader_source_code_vertex_texture  + "} \n";
+				
+		
+		//fragment
+		shader_source_code_fragment_texture = "";
+	  shader_source_code_fragment_texture = shader_source_code_fragment_texture + "varying highp vec2 v_TexCoord; \n";
+	  shader_source_code_fragment_texture = shader_source_code_fragment_texture + "uniform sampler2D u_Sampler; \n";
+		shader_source_code_fragment_texture = shader_source_code_fragment_texture + "void main(void){ \n";
+		shader_source_code_fragment_texture = shader_source_code_fragment_texture + "  gl_FragColor = texture2D(u_Sampler, v_TexCoord); \n";
+		shader_source_code_fragment_texture = shader_source_code_fragment_texture +  "} \n";
+				
+		
+}
+
+//compile shader
+start_game_engine_compile_shader = function()
+{
+  let output_shader_program = null;
+	
+	
+	
+	return output_shader_program;
+}
+
+
