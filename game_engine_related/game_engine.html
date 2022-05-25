@@ -55,7 +55,8 @@
 				  //model cloneable entry
 					var model_cloneable_entry = { 
 						                            "vertex": null,
-																				"vertec_total_rows": null,
+																				"vertex_opengles": null,
+																				"vertex_total_rows": null,
 																				"vertex_data_downloaded": false,
 																				"vertex_data_url": null,
 					                              "vertex_type":0,
@@ -65,7 +66,11 @@
 																				"vertex_texture_coordinates": null, 
 																				"vertex_texture_coordinates_downloaded": false,
 																				"vertex_texture_coordinates_url": null,
-																				"texture_catalogue_name": null, 
+																				"texture_catalogue_name": null,
+																				"manipulated_buffer": {
+																					                      "vertex_and_texturecoordinates": null,
+																																"vertex_and_rgba": null
+																			                     	  },
 																				"metadata": {
 																					            "position": { "x": 0.000000, "y": 0.000000, "z": 0.000000 },
                                                       "rotation": { "x": 0.000000, "y": 0.000000, "z": 0.000000 },
@@ -75,32 +80,7 @@
 					var model_catalogue = [];
 					var model_catalogue_current_download_target = null;
 					
-          //multicolored triangle
-          var triangle_vertex = null;
-          var triangle_total_rows = null;
-          var triangle_vertex_opengles = null;
-          var triangle_metadata = { "position": { "x": 0.000000, "y": 0.000000, "z": 0.000000 },
-                                    "rotation": { "x": 0.000000, "y": 0.000000, "z": 0.000000 },
-                                    "scale": {  "x": 1.000000, "y": 1.000000, "z": 1.000000 },
-                                  };
-          //var triangle_and_rgba_color_vertex_manipulated = null;
-          var triangle_and_texturecoordinates_vertex_manipulated = null;
-        
-				  var triangle_texture_coordinates = null;
-				
-				  //square to point towards
-				  var square_vertex = null;
-			  	var square_total_rows = null;
-			  	var square_vertex_opengles = null;
-			  	var square_metadata = { "position": { "x": 0.000000, "y": 0.000000, "z": 0.000000 },
-                                  "rotation": { "x": 0.000000, "y": 0.000000, "z": 0.000000 },
-                                  "scale": {  "x": 1.000000, "y": 1.000000, "z": 1.000000 },
-                                };
-				  //var square_and_rgba_color_vertex_manipulated = null;
-          var square_and_texturecoordinates_vertex_manipulated = null;
-				
-				  var square_texture_coordinates = null;
-				
+					
 				
 		  //texture catalogue
 			var texture_catalogue = [];
@@ -150,9 +130,7 @@
 			
 			  //scene major one
 				var tick_scene_major_one = null;
-				  //image elements.
-					var scene_major_one_minor_one_image_elements = [];
-					 
+				
         
       //define functions.
 			image_element_download_xhr_request_status_loaded = function(event)
@@ -328,7 +306,7 @@
        triangle_vertex = new Float32Array([ /*
                                               1.0, -0.1, -0.5,
                                               0.000001, -0.1, -0.5,
-                                              0.5, -0.2, -0.000001*/
+                                              0.5, -0.2, -0.000001*
                                               
                                      0.01, 0.01, 00, 
                                     //bottom left
@@ -336,7 +314,7 @@
                                     //bottom right
                                     0.20, -0.20, 0.20, 
                                   
-                                  /* second triangle right side facing camera */
+                                  /* second triangle right side facing camera *
                                     //top
                                     0.01, 0.01, 0.0,
                                     //bottom left
@@ -344,7 +322,7 @@
                                     //bottom right
                                     0.20, -0.20, 0.2, 
                                   
-                                  /* third triangle left side facing camera */
+                                  /* third triangle left side facing camera *
                                     //top 
                                     0.01, 0.01, 0.0, 
                                     //bottom left
@@ -352,7 +330,7 @@
                                     //bottom right
                                     -0.20, -0.20, 0.2, 
                                   
-                                  /* fourth triangle back side facing camera */
+                                  /* fourth triangle back side facing camera *
                                     //top
                                     0.01, 0.01, 0.0, 
                                     //bottom right
