@@ -1,0 +1,43 @@
+//HTML DOM canvas element handle.
+var canvas_handle = null;
+//Reference to OpenGLes hardware and thus API handling.
+var opengles = null;
+
+
+//shader source code
+  //solid color
+  var shader_source_code_vertex_shader_solid_color = null;
+  var shader_source_code_fragment_shader_solid_color = null;
+ 
+  //textured
+	var shader_source_code_vertex_texture = null;
+	var shader_source_code_fragment = null;
+	
+//shader binaries
+  //solid color
+	var shader_binary_vertex_shader_solid_color = null;
+	var shader_binary_fragment_shader_solid_color = null;
+	
+	//textured
+	var shader_binary_vertex_shader_texture = null;
+	var shader_binary_fragment_shader_texture = null;
+
+//shader (useable) program
+  //solid color
+	var shader_program_solid_color = null;
+	
+	//textured
+	car shader_program_texture = null;
+	
+
+//functions
+  //define shader source codes
+	var start_game_engine_define_shader_source_codes = null;
+	
+  //compile shader
+	var start_game_engine_compile_shader = null;
+	
+  //start game engine
+	var start_game_engine = null;
+	
+
