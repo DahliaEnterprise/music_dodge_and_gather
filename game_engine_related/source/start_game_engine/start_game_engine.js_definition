@@ -48,13 +48,71 @@ start_game_engine_define_shader_source_codes = function()
 }
 
 //compile shader
-start_game_engine_compile_shader = function()
+start_game_engine_compile_shader = function(vertex_source_code, fragment_source_code)
 {
   let output_shader_program = null;
 	
+	let vertex_shader = opengles.createShader(opengles.VERTEX_SHADER);
+	opengles.shaderSource(vertex_shader, vertex_source_code);
+  opengles.compileShader(vertex_shader);
 	
+	
+	let fragment_shader = opengles.createShader(opengles.FRAGMENT_SHADER);
+	opengles.shaderSource(fragment_shader, fragment_source_code);
+  opengles.compileShader(fragment_shader);
+                
+  output_shader_program = opengles.createProgram();
+  opengles.attachShader(output_shader_program, vertex_shader);
+  opengles.attachShader(output_shader_program, fragment_shader);
+  opengles.linkProgram(output_shader_program);
+      
+  if(!opengles.getProgramParameter(output_shader_program, opengles.LINK_STATUS))
+  {
+    alert("shader link process failed.");
+  }
 	
 	return output_shader_program;
+
 }
+
+//the first function to run to start the game(engine).
+start_game_engine = function()
+{
+  alert("test");
+   canvas_handle = document.getElementById("canvas_for_opengles");
+        
+   opengles = canvas_handle.getContext("webgl2", {
+                                                   "antialias": true,
+                                                   "depth": true
+                                                 });
+																								 
+   opengles.viewportWidth = canvas_handle.width;
+   opengles.viewportHeight = canvas_handle.height;
+        
+   //antialias
+   opengles.enable(opengles.SAMPLE_COVERAGE);
+   opengles.sampleCoverage(1.0, false);
+        
+   //depth (test)
+   opengles.enable(opengles.DEPTH_TEST);
+   opengles.depthFunc(opengles.LESS);
+        
+   //enable, and set cull face; dont rely on default setting
+   opengles.disable(opengles.CULL_FACE);
+   //opengles.cullFace(opengles.BACK);
+   
+	 
+	 //compile shaders
+	 start_game_engine_define_shader_source_codes();
+	 shader_program_solid_color = start_game_engine_compile_shader(shader_source_code_vertex_shader_solid_color, shader_source_code_fragment_shader_solid_color);
+	 
+	 //shader_program_texture = start_game_engine_compile_shader(shader_source_code_vertex_texture, shader_source_code_fragment_texture);
+	 
+	 //begin game conditions tick
+	 tick_game_conditions_last_timestamp = Date.now();
+	 tick_game_conditions();
+	 
+}
+
 
 
