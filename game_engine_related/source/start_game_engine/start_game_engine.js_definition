@@ -113,6 +113,3 @@ start_game_engine = function()
 	 tick_game_conditions();
 	 
 }
-
-
-
