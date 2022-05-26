@@ -1,0 +1,3 @@
+var tick_game_conditions_last_timestamp = null;
+
+var tick_game_conditions = null;
