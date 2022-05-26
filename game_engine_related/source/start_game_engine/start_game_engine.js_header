@@ -11,9 +11,10 @@ var opengles = null;
  
   //textured
 	var shader_source_code_vertex_texture = null;
-	var shader_source_code_fragment = null;
+	var shader_source_code_fragment_texture = null;
 	
 //shader binaries
+  /*
   //solid color
 	var shader_binary_vertex_shader_solid_color = null;
 	var shader_binary_fragment_shader_solid_color = null;
@@ -21,13 +22,13 @@ var opengles = null;
 	//textured
 	var shader_binary_vertex_shader_texture = null;
 	var shader_binary_fragment_shader_texture = null;
-
+  */
 //shader (useable) program
   //solid color
 	var shader_program_solid_color = null;
 	
 	//textured
-	car shader_program_texture = null;
+	var shader_program_texture = null;
 	
 
 //functions
