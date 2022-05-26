@@ -3,9 +3,12 @@ tick_game_conditions = function()
   let timepassed_since_last_game_tick = Date.now() - tick_game_conditions_last_tick_timestamp;
   if(timepassed_since_last_game_tick >= 1000)
   { 
-	  //run a scene here
+	  if(scene_major == 1)
+		{
+		  scene_major_one(timepassed_since_last_game_tick);
+		}
 					
-					console.log("test");
+		
     //update tick_game_conditions_last_tick_timestamp
     tick_game_conditions_last_tick_timestamp = Date.now();
 	}
