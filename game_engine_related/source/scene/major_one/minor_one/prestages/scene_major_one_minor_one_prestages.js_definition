@@ -1,1 +1,218 @@
 
+scene_major_one_minor_one_prestages = function(timepassed_since_last_game_tick)
+{
+  if(scene_prestage == 1)
+	{
+	  if(xhr_text_request_stage == null)
+		{
+	    //Download vertex data
+		  xhr_text_initialize(1);
+		  xhr_text_send_request("http://shastaexchange.com/music_dodge_and_gather/models/user_interface/progress_bar_orange/progress_bar_orange_border.xyz_coordinates", "GET", []);
+		}else if(xhr_text_request_stage == 1)
+		{
+		
+		}else if(xhr_text_request_stage == 3)
+		{
+		  //loaded progress bar orange
+			let split_data_string = xhr_text_response.split(",");
+			scene_major_one_minor_one_models["ui_progress_bar_orange_border"] = new Float32Array(split_data_string);
+			alert(split_data_string);
+			scene_prestage = 2;
+		}else if(xhr_text_request_stage == 4)
+		{
+		  alert("error occured or you aborted the download");
+		}
+		
+	}else if(scene_prestage == 2)
+	{
+	  if(xhr_text_two_request_stage == null)
+		{
+	    //Download texture coordinate data
+		  xhr_text_two_initialize(1);
+		  xhr_text_two_send_request("http://shastaexchange.com/music_dodge_and_gather/models/user_interface/progress_bar_orange/progress_bar_orange_border.xy_texture_coordinates", "GET", []);
+		}else if(xhr_text_two_request_stage == 1)
+		{
+		
+		}else if(xhr_text_two_request_stage == 3)
+		{
+		  //loaded progress bar orange
+			let split_data_string = xhr_text_two_response.split(",");
+			alert(split_data_string);
+			scene_major_one_minor_one_texture_coordinates["ui_progress_bar_orange_border"] = new Float32Array(split_data_string);
+			scene_prestage = 3;
+		}else if(xhr_text_two_request_stage == 4)
+		{
+		  alert("error occured or you aborted the download");
+		}
+	}else if(scene_prestage == 3)
+	{
+	  if(xhr_data_request_stage == null)
+		{
+	    //Download rgba data
+		  xhr_data_initialize(2);
+		  xhr_data_send_request("http://shastaexchange.com/music_dodge_and_gather/images/user_interface/progress_bar_orange/progress_bar_orange_style_border.rgba", "GET", []);
+			//xhr_data_send_request("http://shastaexchanhe.com/test.bin", "GET", []);
+			
+		}else if(xhr_data_request_stage == 1)
+		{
+		
+		}else if(xhr_data_request_stage == 3)
+		{
+		  //loaded progress bar orange
+			scene_major_one_minor_one_image_rgba["ui_progress_bar_orange_border"] = new Uint8Array(xhr_data_response);
+			console.log(xhr_data_response);
+			scene_prestage = 4;
+		}else if(xhr_data_request_stage == 4)
+		{
+		  alert("error occured or you aborted the download");
+		}
+	}else if(scene_prestage == 4)
+	{
+	  let square_vertex = new Float32Array([
+			                                    1.0, 1.0, 0.5,
+																					-1.0, 1.0, 0.5,
+																					-1.0, -1.0, 0.0,
+																					
+																					1.0, 1.0, 0.5,
+																					-1.0, -1.0, 0.0,
+																					1.0, -1.0, 0.0
+			                                  ]);
+																				
+			 let square_texture_coordinates = new Float32Array([
+			                                                  1.0, 1.0,
+																												0.0, 1.0,
+																												0.0, 0.0,
+																												
+																												1.0, 1.0,
+																												0.0, 0.0,
+																												1.0, 0.0
+			                                               ]);
+													
+			let square_total_rows = 6;		
+			 
+	
+	
+		 let square_vertex_manipulated = new Float32Array(square_vertex);
+         
+		 
+		   	 let square_and_texturecoordinates_vertex_manipulated	= combine_vertex_and_texture_coordinates(square_vertex_manipulated, square_texture_coordinates, square_total_rows);
+				 
+				 
+				 
+				 
+        let square_vertex_opengles = opengles.createBuffer();
+         opengles.bindBuffer(opengles.ARRAY_BUFFER, square_vertex_opengles);
+         opengles.bufferData(opengles.ARRAY_BUFFER, square_and_texturecoordinates_vertex_manipulated, opengles.STATIC_DRAW);
+             
+				 
+				 let float_size = square_and_texturecoordinates_vertex_manipulated.BYTES_PER_ELEMENT;
+					 
+				 let attribute_position_coordinates = opengles.getAttribLocation(shader_program_texture, "a_Position");
+            opengles.vertexAttribPointer(attribute_position_coordinates, 3, opengles.FLOAT, false, (float_size * 5), 0);
+            opengles.enableVertexAttribArray(attribute_position_coordinates);
+        
+        
+       let  attribute_texture_coordinates = opengles.getAttribLocation(shader_program_texture, 'a_TexCoord');
+            opengles.vertexAttribPointer(attribute_texture_coordinates , 2, opengles.FLOAT, false, (float_size * 5), (float_size * 3));
+            opengles.enableVertexAttribArray(attribute_texture_coordinates);
+            
+						
+						
+				opengles.pixelStorei(opengles.UNPACK_FLIP_Y_WEBGL, 1);
+             
+             
+			  //alert the gpu where to open and ready for unloading of texture data to gpu memory.
+				let opengles_texture_buffer = opengles.createTexture();
+        opengles.activeTexture(opengles.TEXTURE0);
+             
+        opengles.bindTexture(opengles.TEXTURE_2D, opengles_texture_buffer);
+						 
+			 let u_Sampler = opengles.getUniformLocation(shader_program_texture, 'u_Sampler');
+             //flag which sampler to use with uniform.
+             opengles.uniform1i(u_Sampler, 0);
+             
+             opengles.texParameteri(opengles.TEXTURE_2D, opengles.TEXTURE_MIN_FILTER, opengles.LINEAR);
+              
+             //upload image data from motherboard ram to gpu ram through cpu instructions.
+            // opengles.texImage2D(opengles.TEXTURE_2D, 0, opengles.RGBA, opengles.RGBA, opengles.UNSIGNED_BYTE, image_data);
+          opengles.texImage2D(opengles.TEXTURE_2D, 0, opengles.RGBA, 16, 16, 0, opengles.RGBA, opengles.UNSIGNED_BYTE, scene_major_one_minor_one_image_rgba["ui_progress_bar_orange_border"]);
+					
+					//tell gpu what vertex to draw now that the texture to draw with it has been activated.
+             opengles.useProgram(shader_program_texture);
+             opengles.drawArrays(opengles.TRIANGLES, 0, square_total_rows);
+						 
+						 
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	  /*
+	  //temporarily render from here the border
+		let triangle_vertex = new Float32Array([
+                                              0.0, 0.5, 0.0, 
+                                              -0.5, -0.5, 0.0,
+                                              0.5, -0.5, 0.0
+                                              
+                                              
+                                             ]);
+                                             
+                                             
+         let triangle_rgba_color = new Float32Array([
+                                                  1.0, 0.0, 0.0, 1.0,
+                                                  0.0, 1.0, 0.0, 1.0,
+                                                  0.0, 0.0, 1.0, 1.0
+                                                  
+                                                  
+                                                ]);       
+         let triangle_total_rows = 3;
+         
+         
+				   //Clear the viewport(screen) before drawing a new frame. (you will always do it this way, the only rare times you will add on to an already drawn frame is maybe an Operating System window(or UI) that goes on top of everything else and usually only when there is no alpha or moving objects).
+         opengles.clearColor(0.0, 0.0, 0.0, 1.0);
+         opengles.viewport(0, 0, opengles.viewportWidth, opengles.viewportHeight);
+         opengles.clear(opengles.COLOR_BUFFER_BIT);
+        
+         //draw multi colored triangle
+         let triangle_vertex_manipulated = new Float32Array(triangle_vertex);
+         
+        
+        let triangle_and_rgba_color_vertex_manipulated = combine_vertex_and_rgba_color(triangle_vertex_manipulated, triangle_rgba_color, triangle_total_rows);
+        
+       let  triangle_vertex_opengles = opengles.createBuffer();
+         opengles.bindBuffer(opengles.ARRAY_BUFFER, triangle_vertex_opengles);
+         opengles.bufferData(opengles.ARRAY_BUFFER, triangle_and_rgba_color_vertex_manipulated, opengles.STATIC_DRAW);
+             
+         triangle_vertex_opengles.positionSize = 3;
+         triangle_vertex_opengles.colorSize = 4;
+            
+         triangle_vertex_opengles.numberOfItems = triangle_total_rows;
+
+         opengles.bindBuffer(opengles.ARRAY_BUFFER, triangle_vertex_opengles);
+            
+            
+         //draw
+         opengles.useProgram(shader_program_solid_color);
+       
+         shader_program_solid_color.vertexPositionAttribute = opengles.getAttribLocation(shader_program_solid_color, "position_of_vertex_to_colorize");
+         
+         shader_program_solid_color.vertexColorAttribute = opengles.getAttribLocation(shader_program_solid_color, "color_of_vertex_to_colorize");
+          
+         opengles.vertexAttribPointer(shader_program_solid_color.vertexPositionAttribute,  triangle_vertex_opengles.positionSize, opengles.FLOAT, false, 28, 0);
+        
+         opengles.vertexAttribPointer(shader_program_solid_color.vertexColorAttribute,  triangle_vertex_opengles.colorSize, opengles.FLOAT, false, 28, 12);
+        
+         opengles.enableVertexAttribArray(shader_program_solid_color.vertexPositionAttribute);
+      
+         opengles.enableVertexAttribArray(shader_program_solid_color.vertexColorAttribute);
+        
+         opengles.drawArrays(opengles.TRIANGLES, 0, triangle_vertex_opengles.numberOfItems);
+				 */
+				 
+	}
+}
