@@ -106,7 +106,7 @@ start_game_engine = function()
 	 start_game_engine_define_shader_source_codes();
 	 shader_program_solid_color = start_game_engine_compile_shader(shader_source_code_vertex_shader_solid_color, shader_source_code_fragment_shader_solid_color);
 	 
-	 //shader_program_texture = start_game_engine_compile_shader(shader_source_code_vertex_texture, shader_source_code_fragment_texture);
+	 shader_program_texture = start_game_engine_compile_shader(shader_source_code_vertex_texture, shader_source_code_fragment_texture);
 	 
 	 //begin game conditions tick
 	 tick_game_conditions_last_timestamp = Date.now();
