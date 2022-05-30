@@ -1,1 +1,5 @@
+var scene_major_one_minor_one = null;
+var scene_major_one_minor_one_models = [];
+var scene_major_one_minor_one_texture_coordinates = [];
+var scene_major_one_minor_one_image_rgba = [];
 
