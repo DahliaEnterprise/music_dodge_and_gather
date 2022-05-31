@@ -7,8 +7,15 @@ alert("data initialzie");
 	xhr_data_request_object = null;
 	xhr_data_request_object = new XMLHttpRequest();
 	xhr_data_request_type = response_type;
-  xhr_data_request_object.responseType = "arraybuffer";
 	
+	if(response_type == 1)
+	{
+	  xhr_data_request_object.responseType = "text";
+	}else if(response_type == 2)
+	{
+	  xhr_data_request_object.responseType = "arraybuffer";
+	}
+  
 	xhr_data_request_object.addEventListener("load", xhr_data_event_load, false);
 	xhr_data_request_object.addEventListener("progress", xhr_data_event_progress, false);
 	xhr_data_request_object.addEventListener("error", xhr_data_event_error, false);
