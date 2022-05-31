@@ -1,0 +1,30 @@
+combine_vertex_and_rgba_color = function(vertex, rgba_color, total_rows)
+      {
+        let size_of_vertex_and_color_rgba = ((3+4)*total_rows);
+        let vertex_and_color_rgba = new Float32Array(size_of_vertex_and_color_rgba);
+        
+        let vertex_index = 0;
+        let rgba_color_index = 0;
+        let vertex_and_color_rgba_index = 0;
+        let row = 0;
+        while(row < total_rows)
+        {
+          vertex_and_color_rgba[vertex_and_color_rgba_index] = vertex[vertex_index];
+          vertex_and_color_rgba[vertex_and_color_rgba_index+1] = vertex[vertex_index+1];
+          vertex_and_color_rgba[vertex_and_color_rgba_index+2] = vertex[vertex_index+2];
+          
+          vertex_and_color_rgba[vertex_and_color_rgba_index+3] = rgba_color[rgba_color_index];
+          vertex_and_color_rgba[vertex_and_color_rgba_index+4] = rgba_color[rgba_color_index+1];
+          vertex_and_color_rgba[vertex_and_color_rgba_index+5] = rgba_color[rgba_color_index+2];
+          vertex_and_color_rgba[vertex_and_color_rgba_index+6] = rgba_color[rgba_color_index+3];
+          
+          vertex_and_color_rgba_index = vertex_and_color_rgba_index + 7;
+          vertex_index = vertex_index + 3;
+          rgba_color_index = rgba_color_index + 4;
+          row = row + 1;
+        }
+        
+        return vertex_and_color_rgba;
+      }
+			
+			
