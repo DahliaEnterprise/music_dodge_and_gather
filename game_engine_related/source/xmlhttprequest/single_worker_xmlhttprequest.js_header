@@ -1,0 +1,45 @@
+var xhr_text_initialize = null;
+var xhr_text_request_stage = null;
+var xhr_text_request_type = null;
+var xhr_text_request_object = null;
+var xhr_text_response_text = null;
+var xhr_text_event_loaded = null;
+var xhr_text_event_progress = null;
+var xhr_text_event_error = null;
+var xhr_text_event_abort = null;
+
+
+var xhr_text_two_initialize = null;
+var xhr_text_two_request_stage = null;
+var xhr_text_two_request_type = null;
+var xhr_text_two_request_object = null;
+var xhr_text_two_response_text = null;
+var xhr_text_two_event_loaded = null;
+var xhr_text_two_event_progress = null;
+var xhr_text_two_event_error = null;
+var xhr_text_two_event_abort = null;
+
+var xhr_data_initialize = null;
+var xhr_data_request_stage = null;
+var xhr_data_request_type = null;
+var xhr_data_request_object = null;
+var xhr_data_response = null;
+var xhr_data_event_loaded = null;
+var xhr_data_event_progress = null;
+var xhr_data_event_error = null;
+var xhr_data_event_abort = null;
+
+
+var xhr_request_object = [];
+var xhr_request_object_index = -1;
+var xhr_request_stage = [];
+var xhr_response_type = [];
+var xhr_response_text = [];
+var xhr_response_data = [];
+var xhr_request_initialize = null;
+var xhr_request_event_loaded = null;
+var xhr_request_event_progress = null;
+var xhr_request_event_error = null;
+var xhr_request_event_abort = null;
+var xhr_clear_memory = null;
+
