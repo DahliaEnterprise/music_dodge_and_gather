@@ -1,0 +1,208 @@
+xhr_text_initialize = function(response_type)
+{
+  xhr_text_request_stage = 1;
+	xhr_text_request_object = null;
+	xhr_text_request_object = new XMLHttpRequest();
+	xhr_text_request_type = response_type;
+  xhr_text_request_object.responseType = "text";
+	
+	xhr_text_request_object.addEventListener("load", xhr_text_event_load, false);
+	xhr_text_request_object.addEventListener("progress", xhr_text_event_progress, false);
+	xhr_text_request_object.addEventListener("error", xhr_text_event_error, false);
+	xhr_text_request_object.addEventListener("abort", xhr_text_event_abort, false);
+	
+}
+
+xhr_text_send_request = function(url, request_type, parameters)
+{
+  xhr_text_request_object.open(request_type, url);
+	xhr_text_request_object.send();
+}
+
+xhr_text_event_load = function(event)
+{
+  if(xhr_text_request_type == 1)
+	{
+	  xhr_text_response = xhr_text_request_object.responseText;
+	}else if(xhr_text_request_type == 2)
+	{
+	  xhr_text_response_data = xhr_text_request_object.response;
+	}
+	
+  xhr_text_request_stage = 3;
+};
+
+xhr_text_event_progress = function(event)
+{
+  
+};
+
+xhr_text_event_error = function(event)
+{
+  alert("error");
+};
+
+xhr_text_event_abort = function(event)
+{
+  alert("abort");0
+};
+
+xhr_text_two_initialize = function(response_type)
+{
+  xhr_text_two_request_stage = 1;
+	xhr_text_two_request_object = null;
+	xhr_text_two_request_object = new XMLHttpRequest();
+	xhr_text_two_request_type = response_type;
+  xhr_text_two_request_object.responseType = "text";
+	
+	xhr_text_two_request_object.addEventListener("load", xhr_text_two_event_load, false);
+	xhr_text_two_request_object.addEventListener("progress", xhr_text_two_event_progress, false);
+	xhr_text_two_request_object.addEventListener("error", xhr_text_two_event_error, false);
+	xhr_text_two_request_object.addEventListener("abort", xhr_text_two_event_abort, false);
+	
+}
+
+xhr_text_two_send_request = function(url, request_type, parameters)
+{
+  xhr_text_two_request_object.open(request_type, url);
+	xhr_text_two_request_object.send();
+}
+
+xhr_text_two_event_load = function(event)
+{
+  if(xhr_text_two_request_type == 1)
+	{
+	  xhr_text_two_response = xhr_text_two_request_object.responseText;
+	}else if(xhr_text_two_request_type == 2)
+	{
+	  xhr_text_two_response_data = xhr_text_two_request_object.response;
+	}
+	
+  xhr_text_two_request_stage = 3;
+};
+
+xhr_text_two_event_progress = function(event)
+{
+  
+};
+
+xhr_text_two_event_error = function(event)
+{
+  alert("error");
+};
+
+xhr_text_two_event_abort = function(event)
+{
+  alert("abort");
+};
+
+
+xhr_data_initialize = function(response_type)
+{
+alert("data initialzie");
+  xhr_data_request_stage = 1;
+	xhr_data_request_object = null;
+	xhr_data_request_object = new XMLHttpRequest();
+	xhr_data_request_type = response_type;
+  xhr_data_request_object.responseType = "arraybuffer";
+	
+	xhr_data_request_object.addEventListener("load", xhr_data_event_load, false);
+	xhr_data_request_object.addEventListener("progress", xhr_data_event_progress, false);
+	xhr_data_request_object.addEventListener("error", xhr_data_event_error, false);
+	xhr_data_request_object.addEventListener("abort", xhr_data_event_abort, false);
+	
+}
+
+xhr_data_send_request = function(url, request_type, parameters)
+{
+alert("send");
+  xhr_data_request_object.open(request_type, url);
+	xhr_data_request_object.send();
+}
+
+xhr_data_event_load = function(event)
+{
+
+	xhr_data_response = xhr_data_request_object.response;
+	
+  xhr_data_request_stage = 3;
+};
+
+xhr_data_event_progress = function(event)
+{
+  
+};
+
+xhr_data_event_error = function(event)
+{
+  alert("error");
+};
+
+xhr_data_event_abort = function(event)
+{
+  alert("abort");
+};
+
+xhr_request_initialize = function(response_type, request_type, url, parameters)
+{
+  xhr_request_object_index = xhr_request_object_index + 1;
+ 
+  let request_id = xhr_request_object_index;
+	
+	xhr_request_stage[request_id] = 1;
+	xhr_request_object[request_id] = null;
+	xhr_request_object[request_id] = new XMLHttpRequest();
+	xhr_response_type[request_id] = response_type;
+	
+	if(response_type == 1)
+	{
+	  xhr_request_object[request_id].responseType = "text";
+	}else if(response_type == 2)
+	{
+	  xhr_request_object[request_id].responseType = "arraybuffer";
+	}
+	
+	xhr_request_object[request_id].addEventListener("load", xhr_request_event_load, false);
+	xhr_request_object[request_id].addEventListener("progress", xhr_request_event_progress, false);
+	xhr_request_object[request_id].addEventListener("error", xhr_request_event_error, false);
+	xhr_request_object[request_id].addEventListener("abort", xhr_request_event_abort, false);
+	
+	xhr_request_object[request_id].open(request_type, url);
+	xhr_request_object[request_id].send();
+	
+	return request_id;
+}
+
+xhr_request_event_load = function(event)
+{
+  if(xhr_response_type[xhr_request_object_index] == 1)
+	{
+	  xhr_response_text[xhr_request_object_index] = xhr_request_object[xhr_request_object_index].responseText;
+	}else if(xhr_response_type[xhr_request_object_index] == 2)
+	{
+	  xhr_response_data[xhr_request_object_index] = xhr_request_object[xhr_request_object_index].response;
+	}
+  
+	xhr_request_stage[xhr_request_object_index] = 3;
+};
+
+xhr_request_event_progress = function(event)
+{
+  
+};
+
+xhr_request_event_error = function(event)
+{
+  alert("error");
+};
+
+xhr_clear_memory = function()
+{
+  //clear last used http request.
+	xhr_request_object[xhr_request_object_index] = null;
+	xhr_request_stage[xhr_request_object_index] = null;
+	xhr_request_stage[xhr_request_object_index] = null;
+	xhr_response_type[xhr_request_object_index] = null;
+	xhr_response_text[xhr_request_object_index] = null;
+	xhr_response_data[xhr_request_object_index] = null;
+}
