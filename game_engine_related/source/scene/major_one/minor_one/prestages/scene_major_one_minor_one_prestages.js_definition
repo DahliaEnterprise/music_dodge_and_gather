@@ -1,3 +1,11 @@
+var get_next_float = null;
+get_next_float = function(string, begin_index, end_index)
+{
+  let float_as_string = "";
+	
+	return float_as_string;
+}
+
 scene_major_one_minor_one_prestages = function(timepassed_since_last_game_tick)
 {
   if(scene_prestage == 1)
@@ -10,10 +18,9 @@ scene_major_one_minor_one_prestages = function(timepassed_since_last_game_tick)
 		{
 	    //loaded progress bar orange
 		  let split_data_string = xhr_response_text[xhr_request_object_index].split(",");
-	    scene_major_one_minor_one_models["ui_progress_bar_orange_border"] = new Float32Array(split_data_string);
-		  alert(split_data_string);
-		
-		  //
+			scene_major_one_minor_one_models["ui_progress_bar_orange_border"] = new Float32Array(xhr_response_text[xhr_request_object_index].split(","));
+			
+			//
 		  xhr_clear_memory();
 		
 		  //next prestage
@@ -30,9 +37,7 @@ scene_major_one_minor_one_prestages = function(timepassed_since_last_game_tick)
 	  if(xhr_request_stage[xhr_request_object_index] == 3)
 		{
 	    //loaded progress bar orange
-		  let split_data_string = xhr_response_text[xhr_request_object_index].split(",");
-	    alert(split_data_string);
-			scene_major_one_minor_one_texture_coordinates["ui_progress_bar_orange_border"] = new Float32Array(split_data_string);
+			scene_major_one_minor_one_texture_coordinates["ui_progress_bar_orange_border"] = new Float32Array(xhr_response_text[xhr_request_object_index].split(","));
 			
 		  //
 		  xhr_clear_memory();
@@ -53,8 +58,7 @@ scene_major_one_minor_one_prestages = function(timepassed_since_last_game_tick)
 	    //loaded progress bar orange
 		  
 			scene_major_one_minor_one_image_rgba["ui_progress_bar_orange_border"] = new Uint8Array(xhr_response_data[xhr_request_object_index]);
-			console.log(scene_major_one_minor_one_image_rgba["ui_progress_bar_orange_border"]);
-		  //
+			//
 		  xhr_clear_memory();
 		
 		  //next prestage
@@ -64,36 +68,34 @@ scene_major_one_minor_one_prestages = function(timepassed_since_last_game_tick)
 		}
 	}else if(scene_prestage == 7)
 	{
-	  let square_vertex = new Float32Array([
-			                                    1.0, 1.0, 0.5,
-																					-1.0, 1.0, 0.5,
-																					-1.0, -1.0, 0.0,
-																					
-																					1.0, 1.0, 0.5,
-																					-1.0, -1.0, 0.0,
-																					1.0, -1.0, 0.0
-			                                  ]);
+	  //Clear the viewport(screen) before drawing a new frame. (you will always do it this way, the only rare times you will add on to an already drawn frame is maybe an Operating System window(or UI) that goes on top of everything else and usually only when there is no alpha or moving objects).
+         opengles.clearColor(0.0, 0.0, 0.0, 1.0);
+         opengles.viewport(0, 0, opengles.viewportWidth, opengles.viewportHeight);
+         opengles.clear(opengles.COLOR_BUFFER_BIT);
+				 
+	  
+	  let square_vertex = scene_major_one_minor_one_models["ui_progress_bar_orange_border"];  /*new Float32Array([
+			                                    1.0, 1.0, 0.0,
+-1.0, 1.0, 0.0,
+-1.0, -0.1, 0.0
+			                                  ]);*/
 																				
-			 let square_texture_coordinates = new Float32Array([
+			 let square_texture_coordinates =  scene_major_one_minor_one_texture_coordinates["ui_progress_bar_orange_border"] /* new Float32Array([
 			                                                  1.0, 1.0,
-																												0.0, 1.0,
-																												0.0, 0.0,
-																												
-																												1.0, 1.0,
-																												0.0, 0.0,
-																												1.0, 0.0
+0.0, 1.0,
+0.0, 1.0
 			                                               ]);
-													
-			let square_total_rows = 6;		
+													*/
+			let square_total_rows = 3;		
 			 
 	
 	
-		 let square_vertex_manipulated = new Float32Array(square_vertex);
+		 let square_vertex_manipulated = square_vertex;
          
 		 
 		   	 let square_and_texturecoordinates_vertex_manipulated	= combine_vertex_and_texture_coordinates(square_vertex_manipulated, square_texture_coordinates, square_total_rows);
 				 
-				 
+				 console.log(square_and_texturecoordinates_vertex_manipulated);
 				 
 				 
         let square_vertex_opengles = opengles.createBuffer();
@@ -104,7 +106,7 @@ scene_major_one_minor_one_prestages = function(timepassed_since_last_game_tick)
 				 let float_size = square_and_texturecoordinates_vertex_manipulated.BYTES_PER_ELEMENT;
 					 
 				 let attribute_position_coordinates = opengles.getAttribLocation(shader_program_texture, "a_Position");
-            opengles.vertexAttribPointer(attribute_position_coordinates, 3, opengles.FLOAT, false, (float_size * 5), 0);
+            opengles.vertexAttribPointer(attribute_position_coordinates, 3, opengles.FLOAT, false, (float_size * 5), (float_size * 0));
             opengles.enableVertexAttribArray(attribute_position_coordinates);
         
         
