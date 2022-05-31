@@ -1,23 +1,3 @@
-var xhr_text_initialize = null;
-var xhr_text_request_stage = null;
-var xhr_text_request_type = null;
-var xhr_text_request_object = null;
-var xhr_text_response_text = null;
-var xhr_text_event_loaded = null;
-var xhr_text_event_progress = null;
-var xhr_text_event_error = null;
-var xhr_text_event_abort = null;
-
-
-var xhr_text_two_initialize = null;
-var xhr_text_two_request_stage = null;
-var xhr_text_two_request_type = null;
-var xhr_text_two_request_object = null;
-var xhr_text_two_response_text = null;
-var xhr_text_two_event_loaded = null;
-var xhr_text_two_event_progress = null;
-var xhr_text_two_event_error = null;
-var xhr_text_two_event_abort = null;
 
 var xhr_data_initialize = null;
 var xhr_data_request_stage = null;
