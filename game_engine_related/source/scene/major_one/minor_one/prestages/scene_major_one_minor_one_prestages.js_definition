@@ -1,10 +1,8 @@
-var get_next_float = null;
-get_next_float = function(string, begin_index, end_index)
-{
-  let float_as_string = "";
-	
-	return float_as_string;
-}
+var  border_intended_for_progressbarvertex_opengles = null;
+var  opengles_texture_buffer = null;
+var  progress_bar_vertex_opengles = null;
+var  progress_bar_opengles_texture_buffer = null;
+
 
 scene_major_one_minor_one_prestages = function(timepassed_since_last_game_tick)
 {
@@ -17,8 +15,7 @@ scene_major_one_minor_one_prestages = function(timepassed_since_last_game_tick)
 	  if(xhr_request_stage[xhr_request_object_index] == 3)
 		{
 	    //loaded progress bar orange
-		  let split_data_string = xhr_response_text[xhr_request_object_index].split(",");
-			scene_major_one_minor_one_models["ui_progress_bar_orange_border"] = new Float32Array(xhr_response_text[xhr_request_object_index].split(","));
+		  scene_major_one_minor_one_models["ui_progress_bar_orange_border"] = new Float32Array(xhr_response_text[xhr_request_object_index].split(","));
 			
 			//
 		  xhr_clear_memory();
@@ -31,7 +28,7 @@ scene_major_one_minor_one_prestages = function(timepassed_since_last_game_tick)
 	}else if(scene_prestage == 3)
 	{
 	  xhr_request_initialize(1, "GET", "http://shastaexchange.com/music_dodge_and_gather/models/user_interface/progress_bar_orange/progress_bar_orange_border.xy_texture_coordinates", []);
-	  scene_prestage = 4
+	  scene_prestage = 4;
 	}else if(scene_prestage == 4)
 	{
 	  if(xhr_request_stage[xhr_request_object_index] == 3)
@@ -68,49 +65,324 @@ scene_major_one_minor_one_prestages = function(timepassed_since_last_game_tick)
 		}
 	}else if(scene_prestage == 7)
 	{
-	  //Clear the viewport(screen) before drawing a new frame. (you will always do it this way, the only rare times you will add on to an already drawn frame is maybe an Operating System window(or UI) that goes on top of everything else and usually only when there is no alpha or moving objects).
+	  // 
+		xhr_request_initialize(1, "GET", "http://shastaexchange.com/music_dodge_and_gather/models/user_interface/generic/square/square.xyz_coordinates", []);
+	  scene_prestage = 8;
+	}else if(scene_prestage == 8)
+	{
+	  if(xhr_request_stage[xhr_request_object_index] == 3)
+		{
+	    //loaded Squared texture coordinates
+		  
+			scene_major_one_minor_one_models["ui_generic_square"] = new Float32Array(xhr_response_text[xhr_request_object_index].split(","));
+			//
+		  xhr_clear_memory();
+		
+		  //next prestage
+		  scene_prestage = 9;
+		}else{
+		  //error/abort check response here.
+		}
+	}else if(scene_prestage == 9)
+	{
+	  // 
+		xhr_request_initialize(1, "GET", "http://shastaexchange.com/music_dodge_and_gather/models/user_interface/generic/square/square.xy_texture_coordinates", []);
+	  scene_prestage = 10;
+	}else if(scene_prestage == 10)
+	{
+	  if(xhr_request_stage[xhr_request_object_index] == 3)
+		{
+		//loaded Squared texture coordinates
+		scene_major_one_minor_one_texture_coordinates["ui_generic_square"] = new Float32Array(xhr_response_text[xhr_request_object_index].split(","));
+			//
+		  xhr_clear_memory();
+		
+		  //next prestage
+		  scene_prestage = 11;
+		}else{
+		  //error/abort check response here.
+		}
+	}else if(scene_prestage == 11)
+	{
+	  xhr_request_initialize(2, "GET", "http://shastaexchange.com/music_dodge_and_gather/images/user_interface/generic/square/pink_and_yellow_gradient.rgba", []);
+	  scene_prestage = 12;
+	}else if(scene_prestage == 12)
+	{
+	  if(xhr_request_stage[xhr_request_object_index] == 3)
+		{
+	    //loaded square Gradient image data
+		  
+			scene_major_one_minor_one_image_rgba["ui_generic_square"] = new Uint8Array(xhr_response_data[xhr_request_object_index]);
+			//
+		  xhr_clear_memory();
+		
+		  //next prestage
+		  scene_prestage = 13;
+		}else{
+		  //error/abort check response here.
+		}
+	}else if(scene_prestage == 13)
+	{
+    //get roster of elements to download.
+		xhr_request_initialize(1, "GET", "http://shastaexchange.com/music_dodge_and_gather/super_models/client_game_elements.roster", []);
+	  scene_prestage = 14;
+		
+	}else if(scene_prestage == 14)
+	{
+	  //create a url list to post to the get file size 
+		if(xhr_request_stage[xhr_request_object_index] == 3)
+		{
+		  let array_of_relative_urls = [];
+			
+			let json_categorized_urls = JSON.parse(xhr_response_text[xhr_request_object_index]);
+			for(let key in json_categorized_urls["vertex_list"])
+			{
+		    if(json_categorized_urls["vertex_list"].hasOwnProperty(key) == true)
+			  { 
+				  console.log(json_categorized_urls["vertex_list"][key]["url"]);
+			    array_of_relative_urls[0] = json_categorized_urls["vertex_list"][key]["url"];
+					console.log("arrat");
+					console.log(array_of_relative_urls);
+			  }
+			}
+			
+			for(let key in json_categorized_urls["rgba_list"])
+			{
+		    if(json_categorized_urls["rgba_list"].hasOwnProperty(key) == true)
+			  { 
+			    array_of_relative_urls.push(json_categorized_urls["rgba_list"][key]["url"]);
+			  }
+			}
+			
+			for(let key in json_categorized_urls["texture_coordinates"])
+			{
+		    if(json_categorized_urls["texture_coordinates"].hasOwnProperty(key) == true)
+			  { 
+			    array_of_relative_urls.push(json_categorized_urls["texture_coordinates"][key]["url"]);
+			  }
+			}
+			
+			for(let key in json_categorized_urls["image_rgba"])
+			{
+		    if(json_categorized_urls["image_rgba"].hasOwnProperty(key) == true)
+			  { 
+			    array_of_relative_urls.push(json_categorized_urls["image_rgba"][key]["url"]);
+			  }
+			}
+			
+			xhr_request_initialize(1, "POST", json_categorized_urls["filesize_php_url"], array_of_relative_urls);
+			scene_prestage = 15;
+		
+		}
+	}else if(scene_prestage == 15)
+	{
+	  if(xhr_request_stage[xhr_request_object_index] == 3)
+		{
+		  /*
+		  let total_bytes_response_as_string = xhr_response_text[xhr_request_object_index]);
+			let total_bytes_response_as_integer = parseInt(total_bytes_response_as_string);
+			if(total_bytes_response_as_integer <= 0)
+			{
+			  alert("download manager failed. game may not work as intended");
+			}else if(total_bytes_response_as_integer > 0)
+			{
+			  scene_major_one_minor_one_roster_elements_download_total_bytes = total_bytes_response_as_integer;
+				
+			}*/
+			
+			console.log(JSON.parse(xhr_response_text[xhr_request_object_index]));
+			
+		  scene_prestage = 20;
+		}
+	}else if(scene_prestage == 16)
+	{
+	  if(xhr_request_stage[xhr_request_object_index] == 3)
+		{
+		
+	    //loaded roster of urls to download elements
+		  scene_major_one_minor_one_roster_elements_download_progress = JSON.parse(xhr_response_text[xhr_request_object_index]);
+			
+			//loop through each roster and their elements and boolean flag to indicate it has been fully download and place in its respective elements array placeholder.
+			scene_major_one_minor_one_roster_elements_download_progress["vertex_list"];
+			
+			let keys = Object.keys(scene_major_one_minor_one_roster_elements_download_progress["vertex_list"]);
+			let key_index = 0;
+			  
+			while(key_index < keys.length)
+			{
+			  if(scene_major_one_minor_one_roster_elements_download_progress["vertex_list"].hasOwnProperty(keys[key_index]) == true)
+			  { 
+			    scene_major_one_minor_one_roster_elements_download_progress["vertex_list"][keys[key_index]].downloaded = 0;
+			  }
+				
+				key_index = key_index + 1;
+			}
+			
+			for(let key in scene_major_one_minor_one_roster_elements_download_progress["rgba_list"])
+			  {
+			    if(scene_major_one_minor_one_roster_elements_download_progress["rgba_list"].hasOwnProperty(key) == true)
+			  	{ 
+			      scene_major_one_minor_one_roster_elements_download_progress["rgba_list"][key]["downloaded"] = 0;
+			    }
+				}
+			
+				for(let key in scene_major_one_minor_one_roster_elements_download_progress["texture_coordinates"])
+			  {
+			    if(scene_major_one_minor_one_roster_elements_download_progress["texture_coordinates"].hasOwnProperty(key) == true)
+			  	{ 
+			      scene_major_one_minor_one_roster_elements_download_progress["texture_coordinates"][key]["downloaded"] = 0;
+			    }
+				}
+				
+				for(let key in scene_major_one_minor_one_roster_elements_download_progress["image_rgba"])
+			  {
+			    if(scene_major_one_minor_one_roster_elements_download_progress["image_rgba"].hasOwnProperty(key) == true)
+			  	{ 
+			      scene_major_one_minor_one_roster_elements_download_progress["image_rgba"][key]["downloaded"] = 0;
+			    }
+				}
+			
+			//
+		  xhr_clear_memory();
+		
+		  //next prestage
+		  scene_prestage = 16;
+		}else{
+		  //error/abort check response here.
+		}
+	}else if(scene_prestage == 16)
+	{
+	  if(scene_major_one_minor_one_roster_elements_download_target == null)
+		{
+		  //find next target
+			let keep_searching_vertex_list = true;
+			let vertex_list_keys = Object.keys(scene_major_one_minor_one_roster_elements_download_progress["vertex_list"]);
+			let vertex_list_keys_index = 0;
+			while(keep_searching_vertex_list == true)
+			{
+			  if(scene_major_one_minor_one_roster_elements_download_progress["vertex_list"].hasOwnProperty(vertex_list_keys[vertex_list_keys_index]) == true)
+			  { 
+				  
+				  if(scene_major_one_minor_one_roster_elements_download_progress["vertex_list"][vertex_list_keys[vertex_list_keys_index]]["downloaded"] == false)
+					{
+					  scene_major_one_minor_one_roster_elements_download_target_roster = "vertex_list";
+					  scene_major_one_minor_one_roster_elements_download_target = ""+vertex_list_keys[vertex_list_keys_index];
+						xhr_request_initialize(1, "GET", "http://shastaexchange.com/music_dodge_and_gather/"+scene_major_one_minor_one_roster_elements_download_progress["vertex_list"][vertex_list_keys[vertex_list_keys_index]]["url"], []);
+						
+						keep_searching_vertex_list = false;
+					}
+			  }
+				
+				vertex_list_keys_index = vertex_list_keys_index + 1;
+				if(vertex_list_keys_index >= vertex_list_keys.length)
+				{
+				  keep_searching_vertex_list = false;
+				}
+			}
+			
+			if(scene_major_one_minor_one_roster_elements_download_target == null)
+			{
+			  //no roster target set, find one from the rgba list.
+				
+			}
+			
+			if(scene_major_one_minor_one_roster_elements_download_target == null)
+			{
+			  //no roster target set, find one from the texture coordinates list.
+				let keep_searching_texture_coordinates_list = true;
+			  let texture_coordinates_list_keys = Object.keys(scene_major_one_minor_one_roster_elements_download_progress["texture_coordinates"]);
+			  let texture_coordinates_list_keys_index = 0;
+			  while(keep_searching_texture_coordinates_list == true)
+			  {
+			    if(scene_major_one_minor_one_roster_elements_download_progress["texture_coordinates"].hasOwnProperty(texture_coordinates_list_keys[texture_coordinates_list_keys_index]) == true)
+			    { 
+				  
+				    if(scene_major_one_minor_one_roster_elements_download_progress["texture_coordinates_list"][texture_coordinates_list_keys[texture_coordinates_list_keys_index]]["downloaded"] == false)
+					  {
+					    scene_major_one_minor_one_roster_elements_download_target_roster = "texture_coordinates";
+					    scene_major_one_minor_one_roster_elements_download_target = ""+texture_coordinates_list_keys[texture_coordinates_list_keys_index];
+						  xhr_request_initialize(1, "GET", "http://shastaexchange.com/music_dodge_and_gather/"+scene_major_one_minor_one_roster_elements_download_progress["texture_coordinates"][texture_coordinates_list_keys[texture_coordinates_list_keys_index]]["url"], []);
+						
+						  keep_searching_texture_coordinates_list = false;
+					  }
+			    }
+				
+				  texture_coordinates_list_keys_index = texture_coordinates_list_keys_index + 1;
+				  if(texture_coordinates_list_keys_index >= texture_coordinates_list_keys.length)
+				  {
+				    keep_searching_texture_coordinates_list = false;
+				  }
+				}
+			}
+		}
+		
+		if(scene_major_one_minor_one_roster_elements_download_target == null)
+		{
+		  //no target found go to scene major one minor one
+			scene_prestage = 0;
+			
+		}else if(scene_major_one_minor_one_roster_elements_download_target != null)
+		{
+	   if(xhr_request_stage[xhr_request_object_index] == 3)
+		 {
+	      //loaded
+		    if(scene_major_one_minor_one_roster_elements_download_target_roster == "vertex_list")
+				{
+				  scene_major_one_minor_one_models[scene_major_one_minor_one_roster_elements_download_target] = new Float32Array(xhr_response_text[xhr_request_object_index]);
+					
+					//indicate system is ready to download the next target.
+					scene_major_one_minor_one_roster_elements_download_target = null;
+					scene_major_one_minor_one_roster_elements_download_target_roster = null;
+			  }else if(scene_major_one_minor_one_roster_elements_download_target_roster == "texture_coordinates")
+				{
+				  scene_major_one_minor_one_texture_coordinates[scene_major_one_minor_one_roster_elements_download_target] = new Float32Array(xhr_response_text[xhr_request_object_index]);
+					
+					//indicate system is ready to download the next target.
+					scene_major_one_minor_one_roster_elements_download_target = null;
+					scene_major_one_minor_one_roster_elements_download_target_roster = null;
+				}
+					
+				//
+		    xhr_clear_memory();
+			
+		  }else{
+		    //error/abort check response here.
+		  }
+		
+		
+		 //Clear the viewport(screen) before drawing a new frame. (you will always do it this way, the only rare times you will add on to an already drawn frame is maybe an Operating System window(or UI) that goes on top of everything else and usually only when there is no alpha or moving objects).
          opengles.clearColor(0.0, 0.0, 0.0, 1.0);
          opengles.viewport(0, 0, opengles.viewportWidth, opengles.viewportHeight);
          opengles.clear(opengles.COLOR_BUFFER_BIT);
 				 
-	  
-	  let square_vertex = scene_major_one_minor_one_models["ui_progress_bar_orange_border"];  /*new Float32Array([
-			                                    1.0, 1.0, 0.0,
--1.0, 1.0, 0.0,
--1.0, -0.1, 0.0
-			                                  ]);*/
-																				
-			 let square_texture_coordinates =  scene_major_one_minor_one_texture_coordinates["ui_progress_bar_orange_border"] /* new Float32Array([
-			                                                  1.0, 1.0,
-0.0, 1.0,
-0.0, 1.0
-			                                               ]);
-													*/
-			let square_total_rows = 3;		
-			 
-	
-	
-		 let square_vertex_manipulated = square_vertex;
+	    //border intended for progress.   bar
+				 let border_intended_for_progressbarvertex = scene_major_one_minor_one_models["ui_progress_bar_orange_border"]; 
+				 
+				 let border_intended_for_progressbartexture_coordinates = scene_major_one_minor_one_texture_coordinates["ui_progress_bar_orange_border"];
+
+			   
+				 let border_intended_for_progressbartotal_rows = scene_major_one_minor_one_models["ui_progress_bar_orange_border"].length/3;
+			   
+		     let border_intended_for_progressbarvertex_manipulated = border_intended_for_progressbarvertex;
          
 		 
-		   	 let square_and_texturecoordinates_vertex_manipulated	= combine_vertex_and_texture_coordinates(square_vertex_manipulated, square_texture_coordinates, square_total_rows);
-				 
-				 console.log(square_and_texturecoordinates_vertex_manipulated);
+		   	 let border_intended_for_progressbarand_texturecoordinates_vertex_manipulated	= combine_vertex_and_texture_coordinates(border_intended_for_progressbarvertex_manipulated, border_intended_for_progressbartexture_coordinates, border_intended_for_progressbartotal_rows);
 				 
 				 
-        let square_vertex_opengles = opengles.createBuffer();
-         opengles.bindBuffer(opengles.ARRAY_BUFFER, square_vertex_opengles);
-         opengles.bufferData(opengles.ARRAY_BUFFER, square_and_texturecoordinates_vertex_manipulated, opengles.STATIC_DRAW);
+				 
+         border_intended_for_progressbarvertex_opengles = opengles.createBuffer();
+         opengles.bindBuffer(opengles.ARRAY_BUFFER, border_intended_for_progressbarvertex_opengles);
+         opengles.bufferData(opengles.ARRAY_BUFFER, border_intended_for_progressbarand_texturecoordinates_vertex_manipulated, opengles.STATIC_DRAW);
              
 				 
-				 let float_size = square_and_texturecoordinates_vertex_manipulated.BYTES_PER_ELEMENT;
+				 let float_size = border_intended_for_progressbarand_texturecoordinates_vertex_manipulated.BYTES_PER_ELEMENT;
 					 
 				 let attribute_position_coordinates = opengles.getAttribLocation(shader_program_texture, "a_Position");
             opengles.vertexAttribPointer(attribute_position_coordinates, 3, opengles.FLOAT, false, (float_size * 5), (float_size * 0));
             opengles.enableVertexAttribArray(attribute_position_coordinates);
         
         
-       let  attribute_texture_coordinates = opengles.getAttribLocation(shader_program_texture, 'a_TexCoord');
+         let  attribute_texture_coordinates = opengles.getAttribLocation(shader_program_texture, 'a_TexCoord');
             opengles.vertexAttribPointer(attribute_texture_coordinates , 2, opengles.FLOAT, false, (float_size * 5), (float_size * 3));
             opengles.enableVertexAttribArray(attribute_texture_coordinates);
             
@@ -120,7 +392,7 @@ scene_major_one_minor_one_prestages = function(timepassed_since_last_game_tick)
              
              
 			  //alert the gpu where to open and ready for unloading of texture data to gpu memory.
-				let opengles_texture_buffer = opengles.createTexture();
+			  opengles_texture_buffer = opengles.createTexture();
         opengles.activeTexture(opengles.TEXTURE0);
              
         opengles.bindTexture(opengles.TEXTURE_2D, opengles_texture_buffer);
@@ -130,6 +402,10 @@ scene_major_one_minor_one_prestages = function(timepassed_since_last_game_tick)
              opengles.uniform1i(u_Sampler, 0);
              
              opengles.texParameteri(opengles.TEXTURE_2D, opengles.TEXTURE_MIN_FILTER, opengles.LINEAR);
+						 opengles.texParameteri(opengles.TEXTURE_2D, opengles.TEXTURE_MAG_FILTER, opengles.LINEAR);
+						 
+						 opengles.texParameteri(opengles.TEXTURE_2D, opengles.TEXTURE_WRAP_S, opengles.REPEAT);
+						 opengles.texParameteri(opengles.TEXTURE_2D, opengles.TEXTURE_WRAP_T, opengles.REPEAT);
               
              //upload image data from motherboard ram to gpu ram through cpu instructions.
             // opengles.texImage2D(opengles.TEXTURE_2D, 0, opengles.RGBA, opengles.RGBA, opengles.UNSIGNED_BYTE, image_data);
@@ -137,14 +413,75 @@ scene_major_one_minor_one_prestages = function(timepassed_since_last_game_tick)
 					
 					//tell gpu what vertex to draw now that the texture to draw with it has been activated.
              opengles.useProgram(shader_program_texture);
-             opengles.drawArrays(opengles.TRIANGLES, 0, square_total_rows);
+             opengles.drawArrays(opengles.TRIANGLES, 0, border_intended_for_progressbartotal_rows);
 						 
 						 
-	
-	
-	
-	
+        //progress bar
+				 let progressbarvertex = scene_major_one_minor_one_models["ui_generic_square"]; 
+				 
+				 let progressbartexture_coordinates = scene_major_one_minor_one_texture_coordinates["ui_generic_square"];
+
+			   
+				 let progressbartotal_rows = scene_major_one_minor_one_models["ui_progress_bar_orange_border"].length/3;
+			   
+		     let progressbarvertex_manipulated = progressbarvertex;
+         
+		 
+		   	 let progressbarand_texturecoordinates_vertex_manipulated	= combine_vertex_and_texture_coordinates(progressbarvertex_manipulated, progressbartexture_coordinates, progressbartotal_rows);
+				 
+				 
+				 
+         progressbarvertex_opengles = opengles.createBuffer();
+         opengles.bindBuffer(opengles.ARRAY_BUFFER, progressbarvertex_opengles);
+         opengles.bufferData(opengles.ARRAY_BUFFER, progressbarand_texturecoordinates_vertex_manipulated, opengles.STATIC_DRAW);
+             
+				 
+				 let float_size2 = progressbarand_texturecoordinates_vertex_manipulated.BYTES_PER_ELEMENT;
+					 
+				 let attribute_position_coordinates2 = opengles.getAttribLocation(shader_program_texture, "a_Position");
+            opengles.vertexAttribPointer(attribute_position_coordinates2, 3, opengles.FLOAT, false, (float_size * 5), (float_size * 0));
+            opengles.enableVertexAttribArray(attribute_position_coordinates2);
+        
+        
+         let  attribute_texture_coordinates2 = opengles.getAttribLocation(shader_program_texture, 'a_TexCoord');
+            opengles.vertexAttribPointer(attribute_texture_coordinates2 , 2, opengles.FLOAT, false, (float_size * 5), (float_size * 3));
+            opengles.enableVertexAttribArray(attribute_texture_coordinates2);
+            
+						
+						
+				opengles.pixelStorei(opengles.UNPACK_FLIP_Y_WEBGL, 1);
+             
+             
+			  //alert the gpu where to open and ready for unloading of texture data to gpu memory.
+			  progressbar_opengles_texture_buffer = opengles.createTexture();
+        opengles.activeTexture(opengles.TEXTURE0);
+             
+        opengles.bindTexture(opengles.TEXTURE_2D, progressbar_opengles_texture_buffer);
 						 
+			 let u_Sampler2 = opengles.getUniformLocation(shader_program_texture, 'u_Sampler');
+             //flag which sampler to use with uniform.
+             opengles.uniform1i(u_Sampler2, 0);
+             
+             opengles.texParameteri(opengles.TEXTURE_2D, opengles.TEXTURE_MIN_FILTER, opengles.LINEAR);
+						 opengles.texParameteri(opengles.TEXTURE_2D, opengles.TEXTURE_MAG_FILTER, opengles.LINEAR);
+						 
+						 opengles.texParameteri(opengles.TEXTURE_2D, opengles.TEXTURE_WRAP_S, opengles.REPEAT);
+						 opengles.texParameteri(opengles.TEXTURE_2D, opengles.TEXTURE_WRAP_T, opengles.REPEAT);
+              
+             //upload image data from motherboard ram to gpu ram through cpu instructions.
+            // opengles.texImage2D(opengles.TEXTURE_2D, 0, opengles.RGBA, opengles.RGBA, opengles.UNSIGNED_BYTE, image_data);
+          opengles.texImage2D(opengles.TEXTURE_2D, 0, opengles.RGBA, 16, 16, 0, opengles.RGBA, opengles.UNSIGNED_BYTE, scene_major_one_minor_one_image_rgba["ui_generic_square"]);
+					
+					//tell gpu what vertex to draw now that the texture to draw with it has been activated.
+             opengles.useProgram(shader_program_texture);
+             opengles.drawArrays(opengles.TRIANGLES, 0, progressbartotal_rows);
+						 
+	         opengles.deleteBuffer(border_intended_for_progressbarvertex_opengles);
+	         opengles.deleteTexture(opengles_texture_buffer);
+	
+	         opengles.deleteBuffer(progress_bar_vertex_opengles);
+	         opengles.deleteTexture(progress_bar_opengles_texture_buffer);
+	  }
 	}
 	
 }
