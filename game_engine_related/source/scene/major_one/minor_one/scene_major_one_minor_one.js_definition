@@ -1,7 +1,10 @@
-scene_major_one_minor_one = function(timepassed_since_last_game_tick);
+scene_major_one_minor_one = function(timepassed_since_last_game_tick)
 {
   if(scene_prestage != 0)
 	{
 	  scene_major_one_minor_one_prestages(timepassed_since_last_game_tick);
+	}else if(scene_prestage == 0)
+	{
+	  console.log("playing game level");
 	}
 }
