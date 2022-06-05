@@ -1,14 +1,4 @@
 
-var xhr_data_initialize = null;
-var xhr_data_request_stage = null;
-var xhr_data_request_type = null;
-var xhr_data_request_object = null;
-var xhr_data_response = null;
-var xhr_data_event_loaded = null;
-var xhr_data_event_progress = null;
-var xhr_data_event_error = null;
-var xhr_data_event_abort = null;
-
 
 var xhr_request_object = [];
 var xhr_request_object_index = -1;
