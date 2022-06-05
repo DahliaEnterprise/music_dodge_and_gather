@@ -1,57 +1,5 @@
 
 
-xhr_data_initialize = function(response_type)
-{
-alert("data initialzie");
-  xhr_data_request_stage = 1;
-	xhr_data_request_object = null;
-	xhr_data_request_object = new XMLHttpRequest();
-	xhr_data_request_type = response_type;
-	
-	if(response_type == 1)
-	{
-	  xhr_data_request_object.responseType = "text";
-	}else if(response_type == 2)
-	{
-	  xhr_data_request_object.responseType = "arraybuffer";
-	}
-  
-	xhr_data_request_object.addEventListener("load", xhr_data_event_load, false);
-	xhr_data_request_object.addEventListener("progress", xhr_data_event_progress, false);
-	xhr_data_request_object.addEventListener("error", xhr_data_event_error, false);
-	xhr_data_request_object.addEventListener("abort", xhr_data_event_abort, false);
-	
-}
-
-xhr_data_send_request = function(url, request_type, parameters)
-{
-alert("send");
-  xhr_data_request_object.open(request_type, url);
-	xhr_data_request_object.send();
-}
-
-xhr_data_event_load = function(event)
-{
-
-	xhr_data_response = xhr_data_request_object.response;
-	
-  xhr_data_request_stage = 3;
-};
-
-xhr_data_event_progress = function(event)
-{
-  
-};
-
-xhr_data_event_error = function(event)
-{
-  alert("error");
-};
-
-xhr_data_event_abort = function(event)
-{
-  alert("abort");
-};
 
 xhr_request_initialize = function(response_type, request_type, url, parameters)
 {
@@ -78,7 +26,16 @@ xhr_request_initialize = function(response_type, request_type, url, parameters)
 	xhr_request_object[request_id].addEventListener("abort", xhr_request_event_abort, false);
 	
 	xhr_request_object[request_id].open(request_type, url);
-	xhr_request_object[request_id].send();
+	let url_encoded_parameters = "";
+	if(request_type == "POST")
+	{
+	  xhr_request_object[request_id].setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+		for(let key in parameters)
+		{
+		  url_encoded_parameters = url_encoded_parameters + "&" + key + "=" + encodeURIComponent(parameters[key]);
+		}
+	}
+	xhr_request_object[request_id].send(url_encoded_parameters);
 	
 	return request_id;
 }
