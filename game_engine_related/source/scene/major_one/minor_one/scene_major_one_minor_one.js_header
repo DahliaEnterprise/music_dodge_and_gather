@@ -2,4 +2,8 @@ var scene_major_one_minor_one = null;
 var scene_major_one_minor_one_models = [];
 var scene_major_one_minor_one_texture_coordinates = [];
 var scene_major_one_minor_one_image_rgba = [];
-
+var scene_major_one_minor_one_roster_elements_download_progress = {};
+var scene_major_one_minor_one_roster_elements_download_target_roster = null;
+var scene_major_one_minor_one_roster_elements_download_target = null;
+var scene_major_one_minor_one_roster_elements_download_total_bytes = null;
+var scene_major_one_minor_one_roster_elements_download_bytes_downloaded = null;
