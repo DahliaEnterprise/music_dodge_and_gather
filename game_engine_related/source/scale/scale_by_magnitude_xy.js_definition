@@ -1,0 +1,22 @@
+scale_by_magnitude_xy = function(xyz_vertex_coordinates, x_scale_magnitude, y_scale_magnitude, z_scale_magnitude)
+{
+  let index = 0;
+	while(index < xyz_vertex_coordinates.length)
+	{
+	  //x
+		xyz_vertex_coordinates[index] = xyz_vertex_coordinates[index] * x_scale_magnitude;
+		
+	  //y
+		xyz_vertex_coordinates[index] = xyz_vertex_coordinates[index] * y_scale_magnitude;
+		
+		 //z
+		xyz_vertex_coordinates[index] = xyz_vertex_coordinates[index] * z_scale_magnitude;
+		
+		
+	  //next
+	  index = index + 3;
+	}
+	
+	
+	return xyz_vertex_coordinates;
+};
