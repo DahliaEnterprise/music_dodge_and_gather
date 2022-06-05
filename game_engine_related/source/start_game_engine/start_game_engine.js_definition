@@ -78,7 +78,6 @@ start_game_engine_compile_shader = function(vertex_source_code, fragment_source_
 //the first function to run to start the game(engine).
 start_game_engine = function()
 {
-  alert("test");
    canvas_handle = document.getElementById("canvas_for_opengles");
         
    opengles = canvas_handle.getContext("webgl2", {
