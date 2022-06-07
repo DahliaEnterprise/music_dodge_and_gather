@@ -1,5 +1,6 @@
 
 
+
 var xhr_request_object = [];
 var xhr_request_object_index = -1;
 var xhr_request_stage = [];
@@ -7,8 +8,8 @@ var xhr_response_type = [];
 var xhr_response_text = [];
 var xhr_response_data = [];
 var xhr_request_initialize = null;
+var xhr_request_send = null;
 var xhr_request_event_loaded = null;
-var xhr_request_event_progress = null;
 var xhr_request_event_error = null;
 var xhr_request_event_abort = null;
 var xhr_clear_memory = null;
