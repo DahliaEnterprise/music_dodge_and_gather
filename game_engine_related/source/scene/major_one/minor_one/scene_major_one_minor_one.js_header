@@ -1,9 +1,24 @@
-var scene_major_one_minor_one = null;
+//downloaded element data
 var scene_major_one_minor_one_models = [];
+var scene_manor_one_minor_one_rgba = [];
 var scene_major_one_minor_one_texture_coordinates = [];
 var scene_major_one_minor_one_image_rgba = [];
-var scene_major_one_minor_one_roster_elements_download_progress = {};
-var scene_major_one_minor_one_roster_elements_download_target_roster = null;
-var scene_major_one_minor_one_roster_elements_download_target = null;
-var scene_major_one_minor_one_roster_elements_download_total_bytes = null;
-var scene_major_one_minor_one_roster_elements_download_bytes_downloaded = null;
+var scene_major_one_minor_one_sound = [];
+
+//track progress pertaining to downloaded elements
+  //list of elements to download and their downloaded stats
+  var scene_major_one_minor_one_roster_elements_download_progress = {};
+	
+	//create an event handler for tracking bytes downloaded(this will make the progress bar a smooth animation instead of jumping per file progress it smooth animates per byte(s) downloaded)
+	var scene_major_one_minor_one_roster_elements_download_event_progress = null;
+	
+	//tracking the combined total bytes left to download in comparison to bytes downloaded.
+	var scene_major_one_minor_one_roster_elements_download_total_bytes = null;
+  var scene_major_one_minor_one_roster_elements_download_bytes_downloaded = null;
+
+	//the current element being downloaded; And their element type.
+  var scene_major_one_minor_one_roster_elements_download_target_roster = null;
+  var scene_major_one_minor_one_roster_elements_download_target = null;
+	
+//functiom definitions
+var scene_major_one_minor_one = null;
