@@ -1,7 +1,8 @@
 
 
 
-xhr_request_initialize = function(response_type, request_type, url, parameters)
+
+xhr_request_initialize = function(response_type, request_type, url)
 {
   xhr_request_object_index = xhr_request_object_index + 1;
  
@@ -21,24 +22,28 @@ xhr_request_initialize = function(response_type, request_type, url, parameters)
 	}
 	
 	xhr_request_object[request_id].addEventListener("load", xhr_request_event_load, false);
-	xhr_request_object[request_id].addEventListener("progress", xhr_request_event_progress, false);
 	xhr_request_object[request_id].addEventListener("error", xhr_request_event_error, false);
 	xhr_request_object[request_id].addEventListener("abort", xhr_request_event_abort, false);
 	
 	xhr_request_object[request_id].open(request_type, url);
-	let url_encoded_parameters = "";
+	
+	return request_id;
+}
+
+xhr_request_send = function(request_type, parameters)
+{
+  let url_encoded_parameters = "";
 	if(request_type == "POST")
 	{
-	  xhr_request_object[request_id].setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+	  xhr_request_object[xhr_request_object_index].setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 		for(let key in parameters)
 		{
 		  url_encoded_parameters = url_encoded_parameters + "&" + key + "=" + encodeURIComponent(parameters[key]);
 		}
 	}
-	xhr_request_object[request_id].send(url_encoded_parameters);
+	xhr_request_object[xhr_request_object_index].send(url_encoded_parameters);
 	
-	return request_id;
-}
+};
 
 xhr_request_event_load = function(event)
 {
